@@ -1,20 +1,20 @@
 #include <stdio.h>
 #include "admin/admin.h"
 #include "cliente/cliente.h"
-#include "config/sistema.h"
 
 int main() {
 
-    inicializarSistema();
+    cargarUsuarios(); // cargar datos a memoria
 
     int opcion;
 
     do {
-        printf("\n========= SISTEMA DE BOLETOS ==========\n");
+        printf("\n========= SISTEMA DE BOLETOS =========\n");
         printf("1. Administrador\n");
         printf("2. Cliente\n");
         printf("3. Salir\n");
-        printf("==========================================\n");
+        printf("======================================\n");
+
 
         printf("Seleccione: ");
         scanf("%d", &opcion);
@@ -23,10 +23,10 @@ int main() {
 
             case 1:
                 if (IniciarSesionAdmin()) {
-                    printf("Acceso concedido.\n");
+                    printf("Acceso concedido\n");
                     menuAdmin();
                 } else {
-                    printf("Acceso denegado.\n");
+                    printf("Acceso denegado\n");
                 }
                 break;
 
@@ -43,6 +43,8 @@ int main() {
         }
 
     } while(opcion != 3);
+
+    liberarUsuarios(); 
 
     return 0;
 }

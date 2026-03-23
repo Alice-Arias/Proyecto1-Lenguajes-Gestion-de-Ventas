@@ -4,20 +4,18 @@
 void menuCliente() {
     char nombre[50];
 
-    printf("\n======================================\n");
     printf("\nNombre del cliente: ");
     scanf("%49s", nombre);
+
     printf("Bienvenid@ %s\n", nombre);
-    printf("======================================\n");
 
     int opcion;
 
     do {
         printf("\n========== MENU CLIENTE ==========\n");
-        printf("1. Consultar por eventos\n");
+        printf("1. Consultar eventos\n");
         printf("2. Comprar boletos\n");
         printf("3. Volver\n");
-        printf("======================================\n");
 
         printf("Seleccione: ");
         scanf("%d", &opcion);

@@ -4,13 +4,39 @@
 #include "../security/hash.h"
 #include "admin.h"
 
+// memoria dinámica
+Usuario *listaUsuarios = NULL;
+int cantidadUsuarios = 0;
+
+void cargarUsuarios() {
+
+    FILE *archivo = fopen(ARCHIVO_USUARIOS, "r");
+
+    if (!archivo) {
+        printf("No existe archivo, creando...\n");
+        archivo = fopen(ARCHIVO_USUARIOS, "w");
+        fclose(archivo);
+        return;
+    }
+
+    Usuario temp;
+
+    while (fscanf(archivo, " %49[^,],%lu", temp.usuario, &temp.hash) == 2) {
+
+        cantidadUsuarios++;
+
+        listaUsuarios = realloc(listaUsuarios, cantidadUsuarios * sizeof(Usuario));
+
+        listaUsuarios[cantidadUsuarios - 1] = temp;
+    }
+
+    fclose(archivo);
+}
 
 int IniciarSesionAdmin() {
+
     char usuarioIngresado[50];
     char contrasenaIngresada[50];
-
-    char usuarioArchivo[50];
-    unsigned long hashGuardado;
 
     printf("Usuario: ");
     scanf("%49s", usuarioIngresado);
@@ -18,22 +44,13 @@ int IniciarSesionAdmin() {
     printf("Contrasena: ");
     scanf("%49s", contrasenaIngresada);
 
-    FILE *archivoUsuarios = fopen("data/usuarios.txt", "r");
-
-    if (!archivoUsuarios) {
-        printf("Error al abrir archivo\n");
-        return 0;
-    }
-
     unsigned long hashIngresado = hashContrasena(contrasenaIngresada);
 
-    while (fscanf(archivoUsuarios, " %49[^,],%lu", usuarioArchivo, &hashGuardado) == 2) {// Lee usuario y hash del archivo
+    for (int i = 0; i < cantidadUsuarios; i++) {
 
-        if (strcmp(usuarioIngresado, usuarioArchivo) == 0) {
+        if (strcmp(usuarioIngresado, listaUsuarios[i].usuario) == 0) {
 
-            fclose(archivoUsuarios);
-
-            if (hashIngresado == hashGuardado) {
+            if (hashIngresado == listaUsuarios[i].hash) {
                 return 1;
             } else {
                 return 0;
@@ -41,10 +58,10 @@ int IniciarSesionAdmin() {
         }
     }
 
-    fclose(archivoUsuarios);
     printf("Usuario no encontrado\n");
     return 0;
 }
+
 
 void menuAdmin() {
     int opcion;
@@ -90,4 +107,11 @@ void menuAdmin() {
         }
 
     } while(opcion != 7);
+}
+
+
+void liberarUsuarios() {
+    free(listaUsuarios);
+    listaUsuarios = NULL;
+    cantidadUsuarios = 0;
 }
