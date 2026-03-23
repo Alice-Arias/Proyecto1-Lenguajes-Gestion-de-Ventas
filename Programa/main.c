@@ -1,57 +1,50 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include "security/hash.h"
-#include <string.h>
-
-void crearUsuario();
+#include "admin/admin.h"
+#include "cliente/cliente.h"
 
 int main() {
+
+    cargarUsuarios(); // cargar datos a memoria
+
     int opcion;
 
     do {
-        printf("\n=== Menu ===\n");
-        printf("1. Crear usuario\n");
-        printf("2. Salir\n");
+        printf("\n========= SISTEMA DE BOLETOS =========\n");
+        printf("1. Administrador\n");
+        printf("2. Cliente\n");
+        printf("3. Salir\n");
+        printf("======================================\n");
+
+
         printf("Seleccione: ");
         scanf("%d", &opcion);
 
         switch(opcion) {
+
             case 1:
-                crearUsuario();
+                if (IniciarSesionAdmin()) {
+                    printf("Acceso concedido\n");
+                    menuAdmin();
+                } else {
+                    printf("Acceso denegado\n");
+                }
                 break;
+
             case 2:
-                printf("Saliendo.\n");
+                menuCliente();
                 break;
+
+            case 3:
+                printf("Saliendo...\n");
+                break;
+
             default:
                 printf("Opcion invalida\n");
         }
 
-    } while(opcion != 2);
+    } while(opcion != 3);
+
+    liberarUsuarios(); 
 
     return 0;
-}
-
-void crearUsuario() {
-    char user[50], pass[50];
-
-    printf("Nuevo usuario: ");
-    scanf("%s", user);
-
-    printf("Contrasena: ");
-    scanf("%s", pass);
-
-    FILE *archivo = fopen("data/usuarios.txt", "a");
-
-    if (!archivo) {
-        printf("Error al abrir archivo\n");
-        return;
-    }
-
-    unsigned long hash = hashContrasena(pass);
-
-    fprintf(archivo, "%s,%lu\n", user, hash);// Guardar el usuario y la contraseña encriptada
-
-    fclose(archivo);
-
-    printf("Usuario guardado (encriptado).\n");
 }
