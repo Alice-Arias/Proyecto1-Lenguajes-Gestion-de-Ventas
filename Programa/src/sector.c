@@ -1,11 +1,11 @@
 // src/sitio.c
-#include "/include/sitio.h"
-#include "/include/sector.h"
+#include "../include/sitio.h"
+#include "../include/sector.h"
+#include "../include/asiento.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-// Variables globales
 SitioEvento *sitios = NULL;
 int totalSitios = 0;
 
@@ -94,17 +94,12 @@ void agregarSectorASitio(SitioEvento *sitio, const char *nombreSector, char inic
     nuevo->cantidadEspacios = cantidad;
 
     // Crear arreglo de asientos
-    nuevo->asientos = malloc(cantidad * sizeof(Asiento));
+    nuevo->asientos = crearAsientos(cantidad, inicial);
     if (nuevo->asientos == NULL) {
         printf("Error de memoria para asientos.\n");
         // Revertir el realloc? Por simplicidad, solo retornamos y dejamos el array con el espacio vacío.
         // Una mejor práctica sería no aumentar totalSectores.
         return;
-    }
-
-    // Generar los codigos de asiento (inicial + número)
-    for (int i = 0; i < cantidad; i++) {
-        snprintf(nuevo->asientos[i].codigo, MAX_ASIENTO_CODE, "%c%d", inicial, i + 1);
     }
 
     sitio->totalSectores++;
@@ -114,7 +109,7 @@ void agregarSectorASitio(SitioEvento *sitio, const char *nombreSector, char inic
 void resetSectoresDeSitio(SitioEvento *sitio) {
     // Liberar cada sector y sus asientos
     for (int i = 0; i < sitio->totalSectores; i++) {
-        free(sitio->sectores[i].asientos);
+        liberarAsientos(sitio->sectores[i].asientos, sitio->sectores[i].cantidadEspacios);
     }
     free(sitio->sectores);
     sitio->sectores = NULL;
