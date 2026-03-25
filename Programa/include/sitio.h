@@ -3,7 +3,7 @@
 
 #include "sector.h"
 
-#define MAX_NOMBRE 100
+#define MAX_NOMBRE 50
 #define MAX_UBICACION 150
 #define MAX_WEB 100
 
@@ -16,7 +16,7 @@ typedef struct {
     int totalSectores;
 } SitioEvento;
 
-// se declaran extern para que sean accesibles desde otros documentos .c
+// globales
 extern SitioEvento *sitios;   
 extern int totalSitios;       
 
@@ -29,5 +29,6 @@ void cargarSitiosDesdeArchivo(const char *ruta);
 void guardarSitiosEnArchivo(const char *ruta);
 void liberarSitios();
 void mostrarSitios();
+void mostrarSectoresDeSitio(SitioEvento *sitio);
 
 #endif
