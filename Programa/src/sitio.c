@@ -96,8 +96,7 @@ void agregarSectorASitio(SitioEvento *sitio, const char *nombreSector, char inic
     nuevo->asientos = crearAsientos(cantidad, inicial);
     if (nuevo->asientos == NULL) {
         printf("Error de memoria para asientos.\n");
-        // Revertir el realloc? Por simplicidad, solo retornamos y dejamos el array con el espacio vacío.
-        // Una mejor práctica sería no aumentar totalSectores.
+
         return;
     }
 
@@ -116,7 +115,6 @@ void resetSectoresDeSitio(SitioEvento *sitio) {
     printf("Espacios del sitio '%s' reiniciados.\n", sitio->nombre);
 }
 
-// Funcion auxiliar para mostrar los sitios (podrias agregar también los sectores)
 void mostrarSitios() {
     printf("\n=== Lista de sitios ===\n");
     for (int i = 0; i < totalSitios; i++) {
