@@ -3,13 +3,19 @@
 #include "../include/colors.h"
 #include "../include/evento.h"
 #include "../include/sitio.h"
+#include "../include/sector.h"
 
 void comprarBoletos() {
     int eventoIdx, sectorIdx, asientoIdx;
 
     mostrarEventos();
+
     printf(MENU_INPUT "Seleccione evento: " RESET);
-    scanf("%d", &eventoIdx);
+    if (scanf("%d", &eventoIdx) != 1) {
+        printf(MSG_ERROR "Entrada invalida\n" RESET);
+        while(getchar() != '\n');
+        return;
+    }
 
     if (eventoIdx < 1 || eventoIdx > totalEventos) {
         printf(MSG_ERROR "Evento invalido.\n" RESET);
@@ -18,31 +24,49 @@ void comprarBoletos() {
 
     Evento *evento = &eventos[eventoIdx - 1];
 
-    printf(MENU_INPUT "Seleccione sector: " RESET);
-    scanf("%d", &sectorIdx);
+    printf(MSG_INFO "\nSectores disponibles:\n" RESET);
 
-    if (sectorIdx < 1 || sectorIdx > evento->sitio->totalSectores) {
+    for (int i = 0; i < evento->sitio->totalSectores; i++) {
+        printf("%d. %s\n", i + 1, evento->sitio->sectores[i].nombre);
+    }
+
+    printf(MENU_INPUT "Seleccione sector: " RESET);
+    if (scanf("%d", &sectorIdx) != 1) {
+        printf(MSG_ERROR "Entrada invalida\n" RESET);
+        while(getchar() != '\n');
+        return;
+    }
+
+    int idxSectorReal = sectorIdx - 1;
+
+    if (idxSectorReal < 0 || idxSectorReal >= evento->sitio->totalSectores) {
         printf(MSG_ERROR "Sector invalido.\n" RESET);
         return;
     }
 
-    printf(MENU_INPUT "Seleccione asiento: " RESET);
-    scanf("%d", &asientoIdx);
+    printf(MSG_INFO "\nAsientos disponibles:\n" RESET);
+    for (int i = 0; i < evento->sitio->sectores[idxSectorReal].cantidadEspacios; i++) {
+        printf("%d. %c%d\n", i + 1,
+               evento->sitio->sectores[idxSectorReal].inicial,
+               i + 1);
+    }
 
-    if (asientoIdx < 1 || asientoIdx > evento->sitio->sectores[sectorIdx - 1].cantidadEspacios) {
-        printf(MSG_ERROR "Asiento invalido.\n" RESET);
+    printf(MENU_INPUT "Seleccione asiento: " RESET);
+    if (scanf("%d", &asientoIdx) != 1) {
+        printf(MSG_ERROR "Entrada invalida\n" RESET);
+        while(getchar() != '\n');
         return;
     }
 
-    if (!verificarDisponibilidad(evento, sectorIdx - 1, asientoIdx - 1)) {
+    if (!verificarDisponibilidad(evento, idxSectorReal, asientoIdx - 1)) {
         printf(MSG_ERROR "Asiento no disponible.\n" RESET);
         return;
     }
 
-    float precio = obtenerPrecioAsiento(evento, sectorIdx - 1, asientoIdx - 1);
+    float precio = obtenerPrecioAsiento(evento, idxSectorReal, asientoIdx - 1);
     printf(MSG_INFO "Precio: %.2f\n" RESET, precio);
 
-    marcarVendido(evento, sectorIdx - 1, asientoIdx - 1);
+    marcarVendido(evento, idxSectorReal, asientoIdx - 1);
 }
 
 void menuCliente() {

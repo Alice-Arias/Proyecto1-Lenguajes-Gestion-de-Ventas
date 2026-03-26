@@ -5,6 +5,7 @@
 #include "admin.h"
 #include "../include/sitio.h"
 #include "../include/colors.h"
+#include "../include/evento.h"
 
 
 Usuario *listaUsuarios = NULL;
@@ -69,6 +70,89 @@ int IniciarSesionAdmin() {
     return 0;
 }
 
+void menuEventos() {
+    int opcion;
+
+    do {
+        printf("\n" MENU_BORDER "====================================\n" RESET);
+        printf(MENU_TITLE "      GESTION DE EVENTOS\n" RESET);
+        printf(MENU_BORDER "====================================\n" RESET);
+
+        printf(MENU_OPTION "1. Crear evento\n" RESET);
+        printf(MENU_OPTION "2. Mostrar eventos\n" RESET);
+        printf(MENU_OPTION "3. Volver\n" RESET);
+
+        printf(MENU_BORDER "====================================\n" RESET);
+
+        printf(MENU_INPUT "Seleccione: " RESET);
+        scanf("%d", &opcion);
+
+        switch(opcion) {
+
+            case 1: {
+                char nombre[50], productora[50], fecha[20];
+                int indiceSitio;
+
+                printf(MENU_INPUT "Nombre del evento: " RESET);
+                scanf(" %[^\n]", nombre);
+
+                printf(MENU_INPUT "Productora: " RESET);
+                scanf(" %[^\n]", productora);
+
+                printf(MENU_INPUT "Fecha: " RESET);
+                scanf(" %[^\n]", fecha);
+
+                mostrarSitios();
+                printf(MENU_INPUT "Seleccione sitio: " RESET);
+                scanf("%d", &indiceSitio);
+
+                if (indiceSitio < 1 || indiceSitio > cantidadSitios) {
+                    printf(MSG_ERROR "Sitio invalido\n" RESET);
+                    break;
+                }
+
+                SitioEvento *sitio = &listaSitios[indiceSitio - 1];
+
+                mostrarSectoresDeSitio(sitio);
+
+                int numSectores = sitio->totalSectores;
+
+                if (numSectores == 0) {
+                    printf(MSG_ERROR "El sitio no tiene sectores.\n" RESET);
+                    break;
+                }
+
+                float *precios = malloc(numSectores * sizeof(float));
+                if (!precios) {
+                    printf(MSG_ERROR "Error de memoria\n" RESET);
+                    break;
+                }
+
+                for (int i = 0; i < numSectores; i++) {
+                    printf(MENU_INPUT "Precio para sector '%s': " RESET, sitio->sectores[i].nombre);
+                    scanf("%f", &precios[i]);
+                }
+
+                crearEvento(nombre, productora, fecha, sitio, precios);
+
+                free(precios);
+                break;
+            }
+
+            case 2:
+                mostrarEventos();
+                break;
+
+            case 3:
+                printf(MSG_INFO "Volviendo...\n" RESET);
+                break;
+
+            default:
+                printf(MSG_ERROR "Opcion invalida\n" RESET);
+        }
+
+    } while(opcion != 3);
+}
 
 void menuSitios() {
     int opcion;
@@ -257,7 +341,7 @@ void menuAdmin() {
                 break;
 
             case 3:
-                printf("Aqui van eventos...\n");
+                menuEventos();
                 break;
 
             case 4:

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../include/colors.h"
+#include "../include/sitio.h"
 
 Sector crearSector(const char *nombre, char inicial, int cantidad) {
 
@@ -30,6 +31,69 @@ Sector crearSector(const char *nombre, char inicial, int cantidad) {
 
     return nuevo;
 }
+void guardarSectoresEnArchivo(const char *ruta) {
+    FILE *f = fopen(ruta, "w");
+    if (!f) {
+        printf(MSG_ERROR "Error al guardar sectores.\n" RESET);
+        return;
+    }
+
+    for (int i = 0; i < cantidadSitios; i++) {
+        SitioEvento *sitio = &listaSitios[i];
+
+        for (int j = 0; j < sitio->totalSectores; j++) {
+            Sector *s = &sitio->sectores[j];
+
+            fprintf(f, "%s,%s,%c,%d\n",
+                sitio->nombre,
+                s->nombre,
+                s->inicial,
+                s->cantidadEspacios
+            );
+        }
+    }
+
+    fclose(f);
+    printf(MSG_SUCCESS "Sectores guardados correctamente.\n" RESET);
+}
+void cargarSectoresDesdeArchivo(const char *ruta) {
+    FILE *f = fopen(ruta, "r");
+    if (!f) return;
+
+    char linea[200];
+
+    while (fgets(linea, sizeof(linea), f)) {
+        linea[strcspn(linea, "\n")] = '\0';
+
+        char nombreSitio[50], nombreSector[50];
+        char inicial;
+        int cantidad;
+
+        sscanf(linea, "%[^,],%[^,],%c,%d",
+            nombreSitio,
+            nombreSector,
+            &inicial,
+            &cantidad
+        );
+
+        // 🔥 buscar sitio
+        for (int i = 0; i < cantidadSitios; i++) {
+            if (strcmp(listaSitios[i].nombre, nombreSitio) == 0) {
+
+                agregarSectorASitio(
+                    &listaSitios[i],
+                    nombreSector,
+                    inicial,
+                    cantidad
+                );
+
+                break;
+            }
+        }
+    }
+
+    fclose(f);
+}
 
 void liberarSector(Sector *sector) {
     liberarAsientos(sector->asientos, sector->cantidadEspacios);
@@ -53,7 +117,6 @@ void mostrarSector(Sector *sector) {
     for (int i = 0; i < sector->cantidadEspacios; i++) {
         printf(COLOR_ASIENTO "  %c%d  " RESET, sector->inicial, i + 1);
 
-        // Orden visual (cada 10)
         if ((i + 1) % 10 == 0)
             printf("\n");
     }

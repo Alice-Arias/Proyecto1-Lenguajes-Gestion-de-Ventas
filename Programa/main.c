@@ -10,8 +10,12 @@
 
 int main() {
     cargarUsuarios();
-    inicializarSitios();
-    cargarSitiosDesdeArchivo("data/sitios.txt");
+inicializarSitios();
+cargarSitiosDesdeArchivo("data/sitios.txt");
+cargarSectoresDesdeArchivo("data/sector.txt");
+
+inicializarEventos();
+cargarEventosDesdeArchivo("data/evento.txt");
 
     int opcion;
 
@@ -55,7 +59,8 @@ do {
 } while(opcion != 3);
 
     guardarSitiosEnArchivo("data/sitios.txt");
-
+guardarSectoresEnArchivo("data/sector.txt");
+guardarEventosEnArchivo("data/evento.txt");
     liberarUsuarios();
     liberarSitios();
     liberarEventos();
