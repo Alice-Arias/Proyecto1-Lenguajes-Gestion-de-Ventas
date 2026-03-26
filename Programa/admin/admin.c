@@ -4,6 +4,7 @@
 #include "../security/hash.h"
 #include "admin.h"
 #include "../include/sitio.h"
+#include "../include/colors.h"
 
 
 Usuario *listaUsuarios = NULL;
@@ -15,7 +16,7 @@ void cargarUsuarios() {
     FILE *archivo = fopen(ARCHIVO_USUARIOS, "r");
 
     if (!archivo) {
-        printf("No existe archivo, creando...\n");
+        printf(MSG_INFO "No existe archivo, creando...\n" RESET);
         archivo = fopen(ARCHIVO_USUARIOS, "w");
         fclose(archivo);
         return;
@@ -29,7 +30,7 @@ void cargarUsuarios() {
 
         Usuario *tempPtr = realloc(listaUsuarios, cantidadUsuarios * sizeof(Usuario));
         if (tempPtr == NULL) {
-            printf("Error de memoria\n");
+            printf(MSG_ERROR "Error en memoria\n" RESET);
             return;
         }
 
@@ -46,10 +47,10 @@ int IniciarSesionAdmin() {
     char usuarioIngresado[50];
     char contrasenaIngresada[50];
 
-    printf("Usuario: ");
+    printf(MENU_INPUT "Usuario: " RESET);
     scanf("%49s", usuarioIngresado);
 
-    printf("Contrasena: ");
+    printf(MENU_INPUT "Contrasena: " RESET);
     scanf("%49s", contrasenaIngresada);
 
     unsigned long hashIngresado = hashContrasena(contrasenaIngresada);
@@ -64,7 +65,7 @@ int IniciarSesionAdmin() {
         }
     }
 
-    printf("Usuario no encontrado\n");
+    printf(MSG_ERROR "Usuario no encontrado\n" RESET);
     return 0;
 }
 
@@ -74,15 +75,19 @@ void menuSitios() {
     char ruta[200];
 
     do {
-        printf("\n===== GESTION DE SITIOS =====\n");
-        printf("1. Cargar sitios desde archivo\n");
-        printf("2. Agregar sitio manualmente\n");
-        printf("3. Mostrar sitios\n");
-        printf("4. Guardar sitios\n");
-        printf("5. Volver\n");
-        printf("=============================\n");
+        printf("\n" MENU_BORDER "====================================\n" RESET);
+        printf(MENU_TITLE "      GESTION DE SITIOS\n" RESET);
+        printf(MENU_BORDER "====================================\n" RESET);
 
-        printf("Seleccione: ");
+        printf(MENU_OPTION "1. Cargar sitios desde archivo\n" RESET);
+        printf(MENU_OPTION "2. Agregar sitio manualmente\n" RESET);
+        printf(MENU_OPTION "3. Mostrar sitios\n" RESET);
+        printf(MENU_OPTION "4. Guardar sitios\n" RESET);
+        printf(MENU_OPTION "5. Volver\n" RESET);
+
+        printf(MENU_BORDER "====================================\n" RESET);
+
+        printf(MENU_INPUT "Seleccione: " RESET);
         scanf("%d", &opcion);
 
         switch(opcion) {
@@ -106,7 +111,7 @@ void menuSitios() {
                 scanf(" %[^\n]", web);
 
                 if (strlen(nombre) == 0 || strlen(ubicacion) == 0) {
-                    printf("Datos invalidos.\n");
+                    printf(MSG_ERROR "Datos invalidos.\n" RESET);
                     break;
                 }
 
@@ -141,25 +146,29 @@ void menuSectores() {
     int cantidad;
 
     do {
-        printf("\n===== GESTION DE ESPACIOS =====\n");
-        printf("1. Ver sectores de un sitio\n");
-        printf("2. Agregar sector a un sitio\n");
-        printf("3. Resetear sectores de un sitio\n");
-        printf("4. Volver\n");
-        printf("================================\n");
+        printf("\n" MENU_BORDER "====================================\n" RESET);
+        printf(MENU_TITLE "      GESTION DE ESPACIOS\n" RESET);
+        printf(MENU_BORDER "====================================\n" RESET);
 
-        printf("Seleccione: ");
+        printf(MENU_OPTION "1. Ver sectores de un sitio\n" RESET);
+        printf(MENU_OPTION "2. Agregar sector a un sitio\n" RESET);
+        printf(MENU_OPTION "3. Resetear sectores de un sitio\n" RESET);
+        printf(MENU_OPTION "4. Volver\n" RESET);
+
+        printf(MENU_BORDER "====================================\n" RESET);
+
+        printf(MENU_INPUT "Seleccione: " RESET);
         scanf("%d", &opcion);
 
         switch(opcion) {
 
             case 1:
-                mostrarSitios(); // se mantiene aquí
+                mostrarSitios();
                 printf("Seleccione sitio: ");
                 scanf("%d", &indiceSitio);
 
                 if (indiceSitio < 1 || indiceSitio > cantidadSitios) {
-                    printf("Sitio invalido\n");
+                    printf(MSG_ERROR "Sitio invalido\n" RESET);
                     break;
                 }
 
@@ -167,12 +176,12 @@ void menuSectores() {
                 break;
 
             case 2:
-                mostrarSitios(); // necesario
+                mostrarSitios(); 
                 printf("Seleccione sitio: ");
                 scanf("%d", &indiceSitio);
 
                 if (indiceSitio < 1 || indiceSitio > cantidadSitios) {
-                    printf("Sitio invalido\n");
+                    printf(MSG_ERROR "Sitio invalido\n" RESET);
                     break;
                 }
 
@@ -199,7 +208,7 @@ void menuSectores() {
                 scanf("%d", &indiceSitio);
 
                 if (indiceSitio < 1 || indiceSitio > cantidadSitios) {
-                    printf("Sitio invalido\n");
+                    printf(MSG_ERROR "Sitio invalido\n" RESET);
                     break;
                 }
 
@@ -211,7 +220,7 @@ void menuSectores() {
                 break;
 
             default:
-                printf("Opcion invalida\n");
+                printf(MSG_ERROR "Opcion invalida\n" RESET);
         }
 
     } while(opcion != 4);
@@ -221,17 +230,21 @@ void menuAdmin() {
     int opcion;
 
     do {
-        printf("\n========== MENU ADMINISTRADOR ==========\n");
-        printf("1. Gestion de Sitios de Eventos\n");
-        printf("2. Gestion de espacios sitio de eventos\n");
-        printf("3. Gestion de Eventos\n");
-        printf("4. Estado de evento\n");
-        printf("5. Lista de facturas\n");
-        printf("6. Estadisticas\n");
-        printf("7. Volver\n");
-        printf("=========================================\n");
+        printf("\n" MENU_BORDER "=========================================\n" RESET);
+        printf(MENU_TITLE "        MENU ADMINISTRADOR\n" RESET);
+        printf(MENU_BORDER "=========================================\n" RESET);
 
-        printf("Seleccione: ");
+        printf(MENU_OPTION "1. Gestion de Sitios de Eventos\n" RESET);
+        printf(MENU_OPTION "2. Gestion de espacios sitio de eventos\n" RESET);
+        printf(MENU_OPTION "3. Gestion de Eventos\n" RESET);
+        printf(MENU_OPTION "4. Estado de evento\n" RESET);
+        printf(MENU_OPTION "5. Lista de facturas\n" RESET);
+        printf(MENU_OPTION "6. Estadisticas\n" RESET);
+        printf(MENU_OPTION "7. Volver\n" RESET);
+
+        printf(MENU_BORDER "=========================================\n" RESET);
+
+        printf(MENU_INPUT "Seleccione: " RESET);
         scanf("%d", &opcion);
 
         switch(opcion) {

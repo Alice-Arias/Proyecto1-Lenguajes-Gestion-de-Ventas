@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include "../include/colors.h"
 
 SitioEvento *listaSitios = NULL;
 int cantidadSitios = 0;
@@ -35,7 +35,7 @@ void agregarSitio(const char *nombre, const char *ubicacion, const char *web) {
     // Validar duplicados
     for (int i = 0; i < cantidadSitios; i++) {
         if (strcmp(listaSitios[i].nombre, nombre) == 0) {
-            printf("Error: Ya existe un sitio con nombre '%s'.\n", nombre);
+            printf(MSG_ERROR "Error: Ya existe un sitio con nombre '%s'.\n" RESET, nombre);
             return;
         }
     }
@@ -43,7 +43,7 @@ void agregarSitio(const char *nombre, const char *ubicacion, const char *web) {
     // Redimensionar arreglo
     SitioEvento *nuevoBloque = realloc(listaSitios, (cantidadSitios + 1) * sizeof(SitioEvento));
     if (nuevoBloque == NULL) {
-        printf("Error de memoria al agregar sitio.\n");
+        printf(MSG_ERROR "Error de memoria al agregar sitio.\n" RESET);
         return;
     }
     listaSitios = nuevoBloque;
@@ -72,14 +72,14 @@ void agregarSitio(const char *nombre, const char *ubicacion, const char *web) {
 void agregarSectorASitio(SitioEvento *sitio, const char *nombreSector, char inicial, int cantidad) {
 
     if (cantidad <= 0) {
-        printf("La cantidad de espacios debe ser mayor a 0.\n");
+        printf(MSG_ERROR "La cantidad de espacios debe ser mayor a 0.\n" RESET);
         return;
     }
 
     // Validar duplicados
     for (int i = 0; i < sitio->totalSectores; i++) {
         if (strcmp(sitio->sectores[i].nombre, nombreSector) == 0) {
-            printf("Error: Sector '%s' ya existe.\n", nombreSector);
+            printf(MSG_ERROR "Error: Sector '%s' ya existe.\n" RESET, nombreSector);
             return;
         }
     }
@@ -87,7 +87,7 @@ void agregarSectorASitio(SitioEvento *sitio, const char *nombreSector, char inic
     // Redimensionar sectores
     Sector *nuevoBloque = realloc(sitio->sectores, (sitio->totalSectores + 1) * sizeof(Sector));
     if (nuevoBloque == NULL) {
-        printf("Error de memoria al agregar sector.\n");
+        printf(MSG_ERROR "Error de memoria al agregar sector.\n" RESET);
         return;
     }
 
@@ -99,7 +99,7 @@ void agregarSectorASitio(SitioEvento *sitio, const char *nombreSector, char inic
 
     sitio->totalSectores++;
 
-    printf("Sector '%s' agregado correctamente.\n", nombreSector);
+    printf(MSG_SUCCESS "Sector '%s' agregado correctamente.\n" RESET, nombreSector);
 }
 
 void resetSectoresDeSitio(SitioEvento *sitio) {
@@ -112,31 +112,36 @@ void resetSectoresDeSitio(SitioEvento *sitio) {
     sitio->sectores = NULL;
     sitio->totalSectores = 0;
 
-    printf("Sectores del sitio '%s' reiniciados.\n", sitio->nombre);
+    printf(MSG_SUCCESS "Sectores del sitio '%s' reiniciados.\n" RESET, sitio->nombre);
 }
 
 
 void mostrarSitios() {
 
-    printf("\n=== Lista de sitios ===\n");
+    printf("\n" MENU_BORDER "====================================\n" RESET);
+    printf(COLOR_SITIO BOLD "         LISTA DE SITIOS\n" RESET);
+    printf(MENU_BORDER "====================================\n" RESET);
 
     for (int i = 0; i < cantidadSitios; i++) {
-        printf("%d. %s - %s - %s\n",
-            i + 1,
-            listaSitios[i].nombre,
-            listaSitios[i].ubicacion,
-            listaSitios[i].web
-        );
+        printf(COLOR_SITIO "%d. %s" RESET, i + 1, listaSitios[i].nombre);
+        printf(" | ");
+        printf(MSG_INFO "%s" RESET, listaSitios[i].ubicacion);
+        printf(" | ");
+        printf(COLOR_EVENTO "%s\n" RESET, listaSitios[i].web);
     }
+
+    printf("\n");
 }
 
 
 void mostrarSectoresDeSitio(SitioEvento *sitio) {
 
-    printf("\n=== Sectores del sitio '%s' ===\n", sitio->nombre);
+    printf("\n" MENU_BORDER "====================================\n" RESET);
+    printf(COLOR_SITIO BOLD " Sectores del sitio: %s\n" RESET, sitio->nombre);
+    printf(MENU_BORDER "====================================\n" RESET);
 
     for (int i = 0; i < sitio->totalSectores; i++) {
-        mostrarSector(&sitio->sectores[i]); 
+        mostrarSector(&sitio->sectores[i]);
     }
 }
 
@@ -145,7 +150,7 @@ void cargarSitiosDesdeArchivo(const char *ruta) {
     FILE *archivo = fopen(ruta, "r");
 
     if (archivo == NULL) {
-        printf("No se pudo abrir el archivo.\n");
+        printf(MSG_ERROR "No se pudo abrir el archivo.\n" RESET);
         return;
     }
 
@@ -185,7 +190,7 @@ void guardarSitiosEnArchivo(const char *ruta) {
     FILE *archivo = fopen(ruta, "w");
 
     if (archivo == NULL) {
-        printf("Error al guardar archivo.\n");
+        printf(MSG_ERROR "Error al guardar archivo.\n" RESET);
         return;
     }
 
@@ -199,5 +204,5 @@ void guardarSitiosEnArchivo(const char *ruta) {
 
     fclose(archivo);
 
-    printf("Sitios guardados correctamente.\n");
+    printf(MSG_SUCCESS "Sitios guardados correctamente.\n" RESET);
 }

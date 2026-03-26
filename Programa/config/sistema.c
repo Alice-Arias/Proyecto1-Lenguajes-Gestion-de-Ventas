@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "sistema.h"
+#include "../include/colors.h"
 
 void inicializarSistema() {
     FILE *archivo;
@@ -9,7 +10,7 @@ void inicializarSistema() {
     if (!archivo) {
         archivo = fopen("data/usuarios.txt", "w");
         if (archivo) {
-            printf("Archivo usuarios creado.\n");
+            printf(MSG_INFO "Archivo usuarios creado.\n" RESET);
         }
     }
 

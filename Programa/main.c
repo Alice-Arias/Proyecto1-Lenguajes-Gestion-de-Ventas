@@ -10,51 +10,55 @@
 
 int main() {
     cargarUsuarios();
-inicializarSitios();
-cargarSitiosDesdeArchivo("data/sitios.txt");
+    inicializarSitios();
+    cargarSitiosDesdeArchivo("data/sitios.txt");
+
     int opcion;
 
-    do {
-        // Título con color cian y negrita
-        printf(MENU_TITLE "\n========= SISTEMA DE BOLETOS =========\n" COLOR_RESET);
-        // Opciones en verde
-        printf(MENU_OPTION "1. Administrador\n" COLOR_RESET);
-        printf(MENU_OPTION "2. Cliente\n" COLOR_RESET);
-        printf(MENU_OPTION "4. Probar Estructuras\n" COLOR_RESET);
-        printf(MENU_OPTION "5. Salir\n" COLOR_RESET);
-        printf("======================================\n");
+do {
+    printf("\n" MENU_BORDER "======================================\n" RESET);
+    printf(MENU_TITLE "        SISTEMA DE BOLETOS\n" RESET);
+    printf(MENU_BORDER "======================================\n" RESET);
 
-        printf("Seleccione: ");
-        scanf("%d", &opcion);
+    printf(MENU_OPTION "1. Administrador\n" RESET);
+    printf(MENU_OPTION "2. Cliente\n" RESET);
+    printf(MENU_OPTION "3. Salir\n" RESET);
 
-        switch(opcion) {
-            case 1:
-                if (IniciarSesionAdmin()) {
-                    printf(MENU_SUCCESS "Acceso concedido\n" COLOR_RESET);
-                    menuAdmin();
-                } else {
-                    printf(MENU_ERROR "Acceso denegado\n" COLOR_RESET);
-                }
-                break;
+    printf(MENU_BORDER "======================================\n" RESET);
 
-            case 2:
-                menuCliente();
-                break;
+    printf(MENU_INPUT "Seleccione: " RESET);
+    scanf("%d", &opcion);
 
-            case 4:
-                break;
+    switch(opcion) {
 
-            case 5:
-                printf("Saliendo...\n");
-                break;
+        case 1:
+            if (IniciarSesionAdmin()) {
+                printf(MSG_SUCCESS "Acceso concedido\n" RESET);
+                menuAdmin();
+            } else {
+                printf(MSG_ERROR "Acceso denegado\n" RESET);
+            }
+            break;
 
-            default:
-                printf(MENU_ERROR "Opcion invalida\n" COLOR_RESET);
-        }
-    } while(opcion != 5);
-guardarSitiosEnArchivo("data/sitios.txt");
-liberarUsuarios();
-liberarSitios();
-liberarEventos();
-return 0;
+        case 2:
+            menuCliente();
+            break;
+
+        case 3:
+            printf(MSG_WARNING "Saliendo del sistema...\n" RESET);
+            break;
+
+        default:
+            printf(MSG_ERROR "Opcion invalida\n" RESET);
+    }
+
+} while(opcion != 3);
+
+    guardarSitiosEnArchivo("data/sitios.txt");
+
+    liberarUsuarios();
+    liberarSitios();
+    liberarEventos();
+
+    return 0;
 }

@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../include/colors.h"
 
 Evento *eventos = NULL;
 int totalEventos = 0;
@@ -18,14 +19,14 @@ void inicializarEventos() {
 void crearEvento(const char *nombre, const char *productora, const char *fecha,
                  SitioEvento *sitio, float *preciosPorSector) {
     if (sitio == NULL) {
-        printf("Error: Sitio no válido.\n");
+        printf(MSG_ERROR "Error: Sitio no válido.\n" RESET);
         return;
     }
 
     // Verificar que no exista un evento con el mismo nombre
     for (int i = 0; i < totalEventos; i++) {
         if (strcmp(eventos[i].nombre, nombre) == 0) {
-            printf("Error: Ya existe un evento con nombre '%s'.\n", nombre);
+            printf(MSG_ERROR "Error: Ya existe un evento con nombre '%s'.\n" RESET, nombre);
             return;
         }
     }
@@ -33,7 +34,7 @@ void crearEvento(const char *nombre, const char *productora, const char *fecha,
     // Ampliar arreglo de eventos
     Evento *temp = realloc(eventos, (totalEventos + 1) * sizeof(Evento));
     if (temp == NULL) {
-        printf("Error de memoria al crear evento.\n");
+        printf(MSG_ERROR "Error de memoria al crear evento.\n" RESET);
         return;
     }
     eventos = temp;
@@ -51,7 +52,7 @@ void crearEvento(const char *nombre, const char *productora, const char *fecha,
     int numSectores = sitio->totalSectores;
     nuevo->precios = (PrecioSector*) malloc(numSectores * sizeof(PrecioSector));
     if (nuevo->precios == NULL) {
-        printf("Error de memoria para precios.\n");
+        printf(MSG_ERROR "Error de memoria para precios.\n" RESET);
 
         return;
     }
@@ -65,7 +66,7 @@ void crearEvento(const char *nombre, const char *productora, const char *fecha,
     nuevo->disponibilidad = (int**) malloc(numSectores * sizeof(int*));
     if (nuevo->disponibilidad == NULL) {
         free(nuevo->precios);
-        printf("Error de memoria para disponibilidad.\n");
+        printf(MSG_ERROR "Error de memoria para disponibilidad.\n" RESET);
         return;
     }
     for (int i = 0; i < numSectores; i++) {
@@ -76,7 +77,7 @@ void crearEvento(const char *nombre, const char *productora, const char *fecha,
             for (int j = 0; j < i; j++) free(nuevo->disponibilidad[j]);
             free(nuevo->disponibilidad);
             free(nuevo->precios);
-            printf("Error de memoria para disponibilidad sector %d.\n", i);
+            printf(MSG_ERROR "Error de memoria para disponibilidad sector %d.\n" RESET, i);
             return;
         }
         // Inicializar todos a 1 (disponible)
@@ -86,7 +87,7 @@ void crearEvento(const char *nombre, const char *productora, const char *fecha,
     }
 
     totalEventos++;
-    printf("Evento '%s' creado correctamente en sitio '%s'.\n", nombre, sitio->nombre);
+    printf(MSG_INFO "Evento '%s' creado correctamente en sitio '%s'.\n" RESET, nombre, sitio->nombre);
 }
 
 void liberarEvento(Evento *evento) {
@@ -112,7 +113,7 @@ void liberarEventos() {
 void guardarEventosEnArchivo(const char *ruta) {
     FILE *f = fopen(ruta, "w");
     if (!f) {
-        printf("Error al abrir archivo %s para guardar eventos.\n", ruta);
+        printf(MSG_ERROR "Error al abrir archivo %s para guardar eventos.\n" RESET, ruta);
         return;
     }
 
@@ -127,7 +128,7 @@ void guardarEventosEnArchivo(const char *ruta) {
 
     }
     fclose(f);
-    printf("Eventos guardados en %s.\n", ruta);
+    printf(MSG_INFO "Eventos guardados en %s.\n" RESET, ruta);
 }
 
 void cargarEventosDesdeArchivo(const char *ruta) {
@@ -174,14 +175,14 @@ for (int i = 0; i < cantidadSitios; i++) {
             }
         }
         if (sitio == NULL) {
-            printf("Advertencia: sitio '%s' no encontrado para evento '%s'\n", nombreSitio, nombre);
+            printf(MSG_WARNING "Advertencia: sitio '%s' no encontrado para evento '%s'\n" RESET, nombreSitio, nombre);
             continue;
         }
 
         int numSectores = sitio->totalSectores;
         float *precios = (float*) malloc(numSectores * sizeof(float));
         if (precios == NULL) {
-            printf("Error de memoria al cargar precios.\n");
+            printf(MSG_ERROR "Error de memoria al cargar precios.\n" RESET);
             fclose(f);
             return;
         }
@@ -200,11 +201,23 @@ for (int i = 0; i < cantidadSitios; i++) {
 }
 
 void mostrarEventos() {
-    printf("\n=== Lista de eventos ===\n");
+    printf("\n" MENU_BORDER "====================================\n" RESET);
+    printf(COLOR_EVENTO BOLD "         LISTA DE EVENTOS\n" RESET);
+    printf(MENU_BORDER "====================================\n" RESET);
+
     for (int i = 0; i < totalEventos; i++) {
         Evento *e = &eventos[i];
-        printf("%d. %s - %s - %s - Sitio: %s\n", i+1, e->nombre, e->productora, e->fecha, e->sitio->nombre);
+
+        printf(COLOR_EVENTO "%d. %s" RESET, i + 1, e->nombre);
+        printf(" | ");
+        printf(COLOR_USUARIO "%s" RESET, e->productora);
+        printf(" | ");
+        printf(MSG_INFO "%s" RESET, e->fecha);
+        printf(" | Sitio: ");
+        printf(COLOR_SITIO "%s\n" RESET, e->sitio->nombre);
     }
+
+    printf("\n");
 }
 
 int verificarDisponibilidad(Evento *evento, int sectorIdx, int asientoIdx) {
@@ -218,6 +231,7 @@ void marcarVendido(Evento *evento, int sectorIdx, int asientoIdx) {
     if (sectorIdx >= 0 && sectorIdx < evento->sitio->totalSectores &&
         asientoIdx >= 0 && asientoIdx < evento->sitio->sectores[sectorIdx].cantidadEspacios) {
         evento->disponibilidad[sectorIdx][asientoIdx] = 0;
+        printf(MSG_SUCCESS "Asiento vendido correctamente.\n" RESET);
     }
 }
 
