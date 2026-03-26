@@ -7,33 +7,11 @@
 #include "include/asiento.h"
 #include "include/colors.h"
 
-void probarEstructuras() {
-    printf(COLOR_BLUE "\n=== Probando estructuras ===\n" COLOR_RESET);
-
-    // Crear sitio
-    agregarSitio("Estadio Nacional", "Santiago, Chile", "www.estadio.cl");
-
-    // Agregar sector al sitio
-    agregarSectorASitio(&sitios[0], "Tribuna Norte", 'A', 10);
-
-    // Crear evento
-    float precios[] = {50.0}; // precio para el sector
-    crearEvento("Concierto Rock", "Productora X", "01/12/2023", &sitios[0], precios);
-
-    // Mostrar
-    mostrarSitios();
-    mostrarSectoresDeSitio(&sitios[0]);
-    mostrarAsientos(sitios[0].sectores[0].asientos, 10);
-    mostrarEventos();
-
-    printf(COLOR_BLUE "\n=== Fin de prueba ===\n" COLOR_RESET);
-}
 
 int main() {
     cargarUsuarios();
-    inicializarSitios();
-    inicializarEventos();
-
+inicializarSitios();
+cargarSitiosDesdeArchivo("data/sitios.txt");
     int opcion;
 
     do {
@@ -64,7 +42,6 @@ int main() {
                 break;
 
             case 4:
-                probarEstructuras();
                 break;
 
             case 5:
@@ -75,9 +52,9 @@ int main() {
                 printf(MENU_ERROR "Opcion invalida\n" COLOR_RESET);
         }
     } while(opcion != 5);
-
-    liberarUsuarios();
-    liberarSitios();
-    liberarEventos();
-    return 0;
+guardarSitiosEnArchivo("data/sitios.txt");
+liberarUsuarios();
+liberarSitios();
+liberarEventos();
+return 0;
 }

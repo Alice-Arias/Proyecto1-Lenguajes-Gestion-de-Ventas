@@ -7,7 +7,13 @@
 #define MAX_UBICACION 150
 #define MAX_WEB 100
 
-// Estructura para un sitio de eventos
+/*
+Estructura: SitioEvento
+
+Descripcion:
+Representa un sitio donde se realizan eventos.
+Contiene información básica y sus sectores asociados.
+*/
 typedef struct {
     char nombre[MAX_NOMBRE];
     char ubicacion[MAX_UBICACION];
@@ -16,18 +22,24 @@ typedef struct {
     int totalSectores;
 } SitioEvento;
 
-// globales
-extern SitioEvento *sitios;   
-extern int totalSitios;       
+// Variables globales
+extern SitioEvento *listaSitios;
+extern int cantidadSitios;
 
-
+// Inicialización y liberación
 void inicializarSitios();
+void liberarSitios();
+
+// Gestión de sitios
 void agregarSitio(const char *nombre, const char *ubicacion, const char *web);
-void agregarSectorASitio(SitioEvento *sitio, const char *nombreSector, char inicial, int cantidad);
-void resetSectoresDeSitio(SitioEvento *sitio);
 void cargarSitiosDesdeArchivo(const char *ruta);
 void guardarSitiosEnArchivo(const char *ruta);
-void liberarSitios();
+
+// Gestión de sectores
+void agregarSectorASitio(SitioEvento *sitio, const char *nombreSector, char inicial, int cantidad);
+void resetSectoresDeSitio(SitioEvento *sitio);
+
+// Visualización
 void mostrarSitios();
 void mostrarSectoresDeSitio(SitioEvento *sitio);
 

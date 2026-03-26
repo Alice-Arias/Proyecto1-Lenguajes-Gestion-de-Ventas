@@ -167,9 +167,9 @@ void cargarEventosDesdeArchivo(const char *ruta) {
 
         // Buscar el sitio por nombre
         SitioEvento *sitio = NULL;
-        for (int i = 0; i < totalSitios; i++) {
-            if (strcmp(sitios[i].nombre, nombreSitio) == 0) {
-                sitio = &sitios[i];
+for (int i = 0; i < cantidadSitios; i++) {
+    if (strcmp(listaSitios[i].nombre, nombreSitio) == 0) {
+                sitio = &listaSitios[i];
                 break;
             }
         }

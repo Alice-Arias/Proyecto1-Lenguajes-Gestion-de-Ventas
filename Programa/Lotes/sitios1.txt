@@ -1,0 +1,3 @@
+Estadio Nacional,San Jose,www.estadio.cr
+Teatro Nacional,San Jose,www.teatro.cr
+Centro de Eventos,Alajuela,www.eventos.cr

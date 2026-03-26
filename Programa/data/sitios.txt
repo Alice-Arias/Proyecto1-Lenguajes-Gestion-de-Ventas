@@ -1,0 +1,6 @@
+Estadio Nacional,San Jose,www.estadio.cr
+Teatro Nacional,San Jose,www.teatro.cr
+Centro de Eventos,Alajuela,www.eventos.cr
+Teatro Luz,Limon,ww.limon
+Arena Deportiva,Cartago,www.arena.cr
+Centro Cultural,Limon,www.cultura.cr
