@@ -1,1 +1,7 @@
-Banda,Music x,20/3/2029,Estadio Nacional,19000.00,10000.00
+Banda,Music X,20/3/2029,Estadio Nacional,19000.00,10000.00
+Obra Clasica,Teatro CR,15/4/2029,Teatro Nacional,15000.00,8000.00
+Expo Tecnologia,TechCorp,10/5/2029,Centro de Eventos,12000.00,6000.00
+Concierto Luz,Producciones Caribe,05/6/2029,Teatro Luz,10000.00,5000.00
+Final Futbol,Deportes SA,25/7/2029,Arena Deportiva,18000.00,9000.00
+Festival Cultural,Cultura Viva,12/8/2029,Centro Cultural,9000.00,4000.00
+Musi,MSL,29/8/2028,Estadio Nacional,1000.00,2999.00

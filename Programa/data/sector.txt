@@ -1,2 +1,12 @@
 Estadio Nacional,VIP,V,10
 Estadio Nacional,General,G,20
+Teatro Nacional,Palco,P,8
+Teatro Nacional,Platea,A,15
+Centro de Eventos,Preferencial,P,12
+Centro de Eventos,General,G,25
+Teatro Luz,VIP,V,6
+Teatro Luz,General,G,18
+Arena Deportiva,Cancha,C,20
+Arena Deportiva,Graderia,G,30
+Centro Cultural,Exhibicion,E,10
+Centro Cultural,General,G,20

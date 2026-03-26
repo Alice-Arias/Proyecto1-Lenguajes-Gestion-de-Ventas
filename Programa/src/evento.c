@@ -239,3 +239,5 @@ float obtenerPrecioAsiento(Evento *evento, int sectorIdx, int asientoIdx) {
     if (evento == NULL || sectorIdx < 0 || sectorIdx >= evento->sitio->totalSectores) return 0.0;
     return evento->precios[sectorIdx].precio;
 }
+
+

@@ -16,7 +16,7 @@ cargarSectoresDesdeArchivo("data/sector.txt");
 
 inicializarEventos();
 cargarEventosDesdeArchivo("data/evento.txt");
-
+cargarAsientosDesdeArchivo("data/asientos.txt");
     int opcion;
 
 do {
@@ -61,6 +61,7 @@ do {
     guardarSitiosEnArchivo("data/sitios.txt");
 guardarSectoresEnArchivo("data/sector.txt");
 guardarEventosEnArchivo("data/evento.txt");
+guardarAsientosEnArchivo("data/asientos.txt");
     liberarUsuarios();
     liberarSitios();
     liberarEventos();

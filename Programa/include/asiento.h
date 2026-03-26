@@ -14,5 +14,6 @@ void liberarAsientos(Asiento *asientos, int cantidad);
 
 // Muestra todos los asientos 
 void mostrarAsientos(const Asiento *asientos, int cantidad);
-
+void guardarAsientosEnArchivo(const char *ruta);
+void cargarAsientosDesdeArchivo(const char *ruta);
 #endif

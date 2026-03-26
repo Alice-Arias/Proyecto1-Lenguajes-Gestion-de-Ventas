@@ -44,12 +44,18 @@ void comprarBoletos() {
         return;
     }
 
-    printf(MSG_INFO "\nAsientos disponibles:\n" RESET);
-    for (int i = 0; i < evento->sitio->sectores[idxSectorReal].cantidadEspacios; i++) {
-        printf("%d. %c%d\n", i + 1,
-               evento->sitio->sectores[idxSectorReal].inicial,
-               i + 1);
+printf(MSG_INFO "\nAsientos disponibles:\n" RESET);
+for (int i = 0; i < evento->sitio->sectores[idxSectorReal].cantidadEspacios; i++) {
+    int disponible = evento->disponibilidad[idxSectorReal][i];
+    printf("%2d. %c%d - ", i + 1,
+        evento->sitio->sectores[idxSectorReal].inicial,
+        i + 1);
+    if (disponible) {
+        printf(GREEN "Disponible" RESET "\n");
+    } else {
+        printf(RED "No disponible" RESET "\n");
     }
+}
 
     printf(MENU_INPUT "Seleccione asiento: " RESET);
     if (scanf("%d", &asientoIdx) != 1) {
@@ -95,6 +101,7 @@ void menuCliente() {
 
         switch(opcion) {
             case 1:
+                printf(MENU_BORDER "=================================\n" RESET);
                 printf(MSG_INFO "Aqui consultas eventos...\n" RESET);
                 break;
 
