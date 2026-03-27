@@ -40,5 +40,6 @@ void mostrarEventos();
 int verificarDisponibilidad(Evento *evento, int sectorIdx, int asientoIdx);
 void marcarVendido(Evento *evento, int sectorIdx, int asientoIdx);
 float obtenerPrecioAsiento(Evento *evento, int sectorIdx, int asientoIdx); 
-
+void pedirDatosYCrearEvento();
+void mostrarEstadoEvento();
 #endif

@@ -76,7 +76,6 @@ void cargarSectoresDesdeArchivo(const char *ruta) {
             &cantidad
         );
 
-        // 🔥 buscar sitio
         for (int i = 0; i < cantidadSitios; i++) {
             if (strcmp(listaSitios[i].nombre, nombreSitio) == 0) {
 
