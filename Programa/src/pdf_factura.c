@@ -26,6 +26,17 @@ typedef struct {
 static int escaparPDF(const char *entrada, char *salida, size_t tamSalida);
 static int appendf(char *destino, size_t tamDestino, size_t *usado, const char *fmt, ...);
 
+/*
+ * Objetivo: Agregar una linea de texto al stream PDF con salto vertical.
+ * Entradas:
+ *   - stream/tamStream/usado: buffer de salida y control de posicion actual.
+ *   - linea: texto a escribir en el PDF.
+ * Salida:
+ *   - 1 si la linea se agrego correctamente, 0 en caso de error.
+ * Restricciones:
+ *   - La linea se escapa para PDF antes de escribirla.
+ *   - Falla si no hay espacio suficiente en el stream.
+ */
 static int agregarLineaTexto(char *stream, size_t tamStream, size_t *usado, const char *linea)
 {
     char escapada[PDF_LINE_MAX * 2];
@@ -37,6 +48,17 @@ static int agregarLineaTexto(char *stream, size_t tamStream, size_t *usado, cons
     return appendf(stream, tamStream, usado, "(%s) Tj\n0 -14 Td\n", escapada);
 }
 
+/*
+ * Objetivo: Escapar caracteres especiales para texto literal de PDF.
+ * Entradas:
+ *   - entrada: texto original.
+ *   - salida/tamSalida: buffer destino para texto escapado.
+ * Salida:
+ *   - 1 si el escape fue exitoso, 0 si hay parametros invalidos o desborde.
+ * Restricciones:
+ *   - Escapa '(', ')' y '\\'.
+ *   - Caracteres de control (<32) se reemplazan por espacio.
+ */
 static int escaparPDF(const char *entrada, char *salida, size_t tamSalida)
 {
     size_t i = 0;
@@ -71,6 +93,16 @@ static int escaparPDF(const char *entrada, char *salida, size_t tamSalida)
     return 1;
 }
 
+/*
+ * Objetivo: Concatenar texto formateado al buffer destino de forma segura.
+ * Entradas:
+ *   - destino/tamDestino/usado: buffer de salida y cantidad ya usada.
+ *   - fmt y argumentos variables: formato estilo printf.
+ * Salida:
+ *   - 1 si se pudo escribir, 0 en error o si no hay espacio.
+ * Restricciones:
+ *   - Usa vsnprintf para evitar desbordes.
+ */
 static int appendf(char *destino, size_t tamDestino, size_t *usado, const char *fmt, ...)
 {
     va_list args;
@@ -96,6 +128,15 @@ static int appendf(char *destino, size_t tamDestino, size_t *usado, const char *
     return 1;
 }
 
+/*
+ * Objetivo: Crear el directorio de salida para PDFs si aun no existe.
+ * Entradas:
+ *   - ruta: ruta del directorio a crear.
+ * Salida:
+ *   - 1 si el directorio existe o se pudo crear, 0 en caso contrario.
+ * Restricciones:
+ *   - Si la ruta es nula o vacia retorna error.
+ */
 static int crearDirectorioSiNoExiste(const char *ruta)
 {
     int resultado;
@@ -112,6 +153,17 @@ static int crearDirectorioSiNoExiste(const char *ruta)
     return 0;
 }
 
+/*
+ * Objetivo: Dividir texto largo en varias lineas de ancho fijo para el PDF.
+ * Entradas:
+ *   - texto: cadena a envolver.
+ *   - lineas: arreglo donde se almacenan las lineas resultantes.
+ *   - maxLineas: capacidad maxima del arreglo lineas.
+ * Salida:
+ *   - Cantidad de lineas generadas.
+ * Restricciones:
+ *   - Se intenta cortar por espacio para no partir palabras.
+ */
 static int envolverTexto(const char *texto, LineaEnvuelta *lineas, int maxLineas)
 {
     int cantidad = 0;
@@ -154,6 +206,17 @@ static int envolverTexto(const char *texto, LineaEnvuelta *lineas, int maxLineas
     return cantidad;
 }
 
+/*
+ * Objetivo: Escribir un objeto indirecto PDF en el archivo.
+ * Entradas:
+ *   - archivo: puntero al archivo PDF abierto.
+ *   - numeroObjeto: identificador numerico del objeto.
+ *   - contenido: contenido del objeto (diccionario o stream ya preparado).
+ * Salida:
+ *   - 1 si la escritura fue exitosa, 0 en caso de error.
+ * Restricciones:
+ *   - Archivo y contenido deben ser validos.
+ */
 static int escribirObjetoPDF(FILE *archivo, int numeroObjeto, const char *contenido)
 {
     if (archivo == NULL || contenido == NULL) {
@@ -167,6 +230,18 @@ static int escribirObjetoPDF(FILE *archivo, int numeroObjeto, const char *conten
     return 1;
 }
 
+/*
+ * Objetivo: Generar una factura en formato PDF simple (PDF 1.4) desde una Factura.
+ * Entradas:
+ *   - factura: datos de factura a exportar.
+ *   - directorioSalida: carpeta destino; si es NULL/vacio usa FACTURA_PDF_DIR.
+ *   - rutaGenerada/tamRuta: buffer opcional para devolver la ruta final.
+ * Salida:
+ *   - 1 si el PDF se genero correctamente, 0 si ocurrio algun error.
+ * Restricciones:
+ *   - Requiere factura valida.
+ *   - El stream de contenido esta limitado por PDF_STREAM_MAX.
+ */
 int facturaGenerarPDF(const Factura *factura, const char *directorioSalida, char *rutaGenerada, size_t tamRuta)
 {
     char rutaLocal[260];
