@@ -1,10 +1,121 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>  
+#include <ctype.h>
+#include <string.h>
 #include "cliente.h"
 #include "../include/colors.h"
 #include "../include/evento.h"
 #include "../include/sitio.h"
 #include "../include/sector.h"
+#include "../include/factura.h"
+
+static int esBisiesto(int anio) {
+    return (anio % 400 == 0) || (anio % 4 == 0 && anio % 100 != 0);
+}
+
+static void setMensajeError(char *mensaje, size_t tam, const char *texto) {
+    if (mensaje != NULL && tam > 0) {
+        snprintf(mensaje, tam, "%s", texto);
+    }
+}
+
+static int validarFechaConDetalle(const char *fecha, char *mensaje, size_t tam) {
+    int d, m, a;
+    int diasMes[] = {31,28,31,30,31,30,31,31,30,31,30,31};
+
+    if (sscanf(fecha, "%d/%d/%d", &d, &m, &a) != 3) {
+        setMensajeError(mensaje, tam, "formato invalido; use dd/mm/aaaa (ejemplo: 28/03/2026)");
+        return 0;
+    }
+
+    if (a < 1900) {
+        setMensajeError(mensaje, tam, "anio invalido; el anio minimo permitido es 1900");
+        return 0;
+    }
+
+    if (a > 9999) {
+        setMensajeError(mensaje, tam, "anio invalido; el anio maximo permitido es 9999");
+        return 0;
+    }
+
+    if (m < 1 || m > 12) {
+        setMensajeError(mensaje, tam, "mes invalido; debe estar entre 1 y 12");
+        return 0;
+    }
+
+    if (m == 2 && esBisiesto(a)) {
+        diasMes[1] = 29;
+    }
+
+    if (d < 1 || d > diasMes[m - 1]) {
+        snprintf(mensaje, tam, "dia invalido para el mes %d; rango permitido: 1-%d", m, diasMes[m - 1]);
+        return 0;
+    }
+
+    return 1;
+}
+
+static int esFechaValida(const char *fecha) {
+    return validarFechaConDetalle(fecha, NULL, 0);
+}
+
+static int validarCedulaConDetalle(const char *cedula, char *mensaje, size_t tam) {
+    if (cedula == NULL) {
+        setMensajeError(mensaje, tam, "la cedula no puede estar vacia");
+        return 0;
+    }
+
+    if (strlen(cedula) != 9) {
+        setMensajeError(mensaje, tam, "debe contener exactamente 9 digitos");
+        return 0;
+    }
+
+    for (size_t i = 0; i < 9; i++) {
+        if (!isdigit((unsigned char)cedula[i])) {
+            snprintf(mensaje, tam, "solo se permiten digitos (caracter invalido: '%c')", cedula[i]);
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+static int esCedulaValida(const char *cedula) {
+    return validarCedulaConDetalle(cedula, NULL, 0);
+}
+
+static void limpiarBufferEntrada(void) {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF) {}
+}
+
+static int leerEnteroSeguro(const char *prompt, int *valor) {
+    if (prompt != NULL) {
+        printf("%s", prompt);
+    }
+    if (scanf("%d", valor) != 1) {
+        limpiarBufferEntrada();
+        return 0;
+    }
+    return 1;
+}
+
+static void construirDetalleAsientos(Evento *evento, int sectorIdx, int asientos[], int cantidad, char *destino, size_t tam) {
+    destino[0] = '\0';
+    char inicial = evento->sitio->sectores[sectorIdx].inicial;
+
+    for (int i = 0; i < cantidad; i++) {
+        char item[96];
+        float precio = obtenerPrecioAsiento(evento, sectorIdx, asientos[i]);
+        snprintf(item, sizeof(item), "%c%d(%.2f)", inicial, asientos[i] + 1, precio);
+
+        if (i > 0) {
+            strncat(destino, ", ", tam - strlen(destino) - 1);
+        }
+        strncat(destino, item, tam - strlen(destino) - 1);
+    }
+}
 
 void comprarBoletos() {
     int eventoIdx;
@@ -13,10 +124,8 @@ void comprarBoletos() {
 
     mostrarEventos();
 
-    printf(MENU_INPUT "Seleccione evento: " RESET);
-    if (scanf("%d", &eventoIdx) != 1 || eventoIdx < 1 || eventoIdx > totalEventos) {
+    if (!leerEnteroSeguro(MENU_INPUT "Seleccione evento: " RESET, &eventoIdx) || eventoIdx < 1 || eventoIdx > totalEventos) {
         printf(MSG_ERROR "Evento invalido.\n" RESET);
-        while(getchar() != '\n');
         return;
     }
 
@@ -27,11 +136,17 @@ void comprarBoletos() {
     int sectorIdx = seleccionarSector(evento);
     if (sectorIdx == -1) return;
 
-    int asientosSeleccionados[100];
+    int capacidadAsientos = evento->sitio->sectores[sectorIdx].cantidadEspacios;
+    int *asientosSeleccionados = (int *)malloc(capacidadAsientos * sizeof(int));
+    if (asientosSeleccionados == NULL) {
+        printf(MSG_ERROR "Error de memoria al seleccionar asientos.\n" RESET);
+        return;
+    }
     int cantidadAsientos = seleccionarAsientos(evento, sectorIdx, asientosSeleccionados);
 
     if (cantidadAsientos == 0) {
         printf(MSG_ERROR "No selecciono asientos.\n" RESET);
+        free(asientosSeleccionados);
         return;
     }
 
@@ -39,25 +154,35 @@ char cedula[50], nombre[100];
 
 printf(MENU_TITLE "\n===== DATOS DEL COMPRADOR =====\n" RESET);
 
-printf(MENU_INPUT "Ingrese cedula: " RESET);
-scanf("%s", cedula);
+do {
+    char errorCedula[128];
+    printf(MENU_INPUT "Ingrese cedula (9 digitos): " RESET);
+    scanf("%49s", cedula);
+
+    if (!validarCedulaConDetalle(cedula, errorCedula, sizeof(errorCedula))) {
+        printf(MSG_ERROR "Cedula invalida: %s.\n" RESET, errorCedula);
+    }
+} while (!esCedulaValida(cedula));
 
 printf(MENU_INPUT "Ingrese nombre: " RESET);
-scanf(" %[^\n]", nombre);
+scanf(" %99[^\n]", nombre);
 
 printf(MSG_SUCCESS "Datos registrados correctamente.\n" RESET);
     // ===== CALCULOS =====
     float subtotal = calcularSubtotal(evento, sectorIdx, asientosSeleccionados, cantidadAsientos);
     float servicio = subtotal * 0.05;
     float total = subtotal + servicio;
+    char detalleAsientos[MAX_DETALLE_FACTURA];
+    construirDetalleAsientos(evento, sectorIdx, asientosSeleccionados, cantidadAsientos, detalleAsientos, sizeof(detalleAsientos));
 
     // ===== FACTURA =====
-    mostrarFactura(evento, cedula, nombre, subtotal, servicio, total);
-guardarFactura(evento, cedula, nombre, subtotal, servicio, total);
-    // ===== MARCAR ASIENTOS =====
-    for (int i = 0; i < cantidadAsientos; i++) {
-        marcarVendido(evento, sectorIdx, asientosSeleccionados[i]);
+    Factura factura;
+    if (facturaCrearDesdeCompra(&factura, evento, cedula, nombre, subtotal, servicio, total, detalleAsientos, 0)) {
+        facturaGuardar(ARCHIVO_FACTURAS, &factura);
+        facturaMostrarDetalle(&factura);
     }
+
+    free(asientosSeleccionados);
 }
 
 int seleccionarSector(Evento *evento) {
@@ -70,8 +195,10 @@ int seleccionarSector(Evento *evento) {
         printf(MENU_OPTION "%d. %s\n" RESET, i + 1, evento->sitio->sectores[i].nombre);
     }
 
-    printf(MENU_INPUT "Seleccione sector: " RESET);
-    scanf("%d", &sectorIdx);
+    if (!leerEnteroSeguro(MENU_INPUT "Seleccione sector: " RESET, &sectorIdx)) {
+        printf(MSG_ERROR "Entrada invalida.\n" RESET);
+        return -1;
+    }
 
     if (sectorIdx < 1 || sectorIdx > evento->sitio->totalSectores) {
         printf(MSG_ERROR "Sector invalido.\n" RESET);
@@ -107,12 +234,19 @@ int seleccionarAsientos(Evento *evento, int sectorIdx, int seleccionados[]) {
         }
 
         printf(RED "\n0. Terminar de comprar\n\n" RESET);
-        printf(MENU_INPUT "Seleccione asiento: " RESET);
-        scanf("%d", &opcion);
+        if (!leerEnteroSeguro(MENU_INPUT "Seleccione asiento: " RESET, &opcion)) {
+            printf(MSG_ERROR "Entrada invalida.\n" RESET);
+            continue;
+        }
 
         if (opcion == 0) {
         printf(MSG_WARNING "Finalizando seleccion.\n" RESET);
         break;
+}
+
+if (opcion < 1 || opcion > total) {
+    printf(MSG_ERROR "Asiento invalido.\n" RESET);
+    continue;
 }
 
 if (!verificarDisponibilidad(evento, sectorIdx, opcion - 1)) {
@@ -122,7 +256,9 @@ if (!verificarDisponibilidad(evento, sectorIdx, opcion - 1)) {
 
 marcarVendido(evento, sectorIdx, opcion - 1);
 
-seleccionados[cantidad++] = opcion - 1;
+if (cantidad < total) {
+    seleccionados[cantidad++] = opcion - 1;
+}
 
 printf(MSG_SUCCESS "Asiento agregado.\n" RESET);
     }
@@ -140,55 +276,6 @@ float calcularSubtotal(Evento *evento, int sectorIdx, int asientos[], int cantid
 
     return subtotal;
 }
-void mostrarFactura(Evento *evento, char cedula[], char nombre[], float subtotal, float servicio, float total) {
-
-    printf("\n" MENU_BORDER "=================================\n" RESET);
-    printf(MENU_TITLE "           FACTURA\n" RESET);
-    printf(MENU_BORDER "=================================\n" RESET);
-
-    printf(MAGENTA "Cedula: " RESET "%s\n", cedula);
-    printf(MAGENTA "Nombre: " RESET "%s\n", nombre);
-    printf(MAGENTA "Evento: " RESET "%s\n", evento->nombre);
-    printf(MAGENTA "Productora: " RESET "%s\n", evento->productora);
-    printf(MAGENTA "Sitio: " RESET "%s\n", evento->sitio->nombre);
-    printf(MAGENTA "Fecha: " RESET "%s\n", evento->fecha);
-
-    printf(MENU_BORDER "---------------------------------\n" RESET);
-
-    printf(MSG_INFO BOLD "Subtotal: " RESET "%.2f\n", subtotal);
-    printf(MSG_WARNING BOLD "Servicio (5%%): " RESET "%.2f\n", servicio);
-    printf(MSG_SUCCESS BOLD "TOTAL: " RESET "%.2f\n", total);
-
-    printf(MENU_BORDER "=================================\n" RESET);
-}
-
-void guardarFactura(Evento *evento, char cedula[], char nombre[], float subtotal, float servicio, float total) {
-
-    FILE *archivo = fopen("data/facturas.txt", "a");
-
-    if (archivo == NULL) {
-        printf(MSG_ERROR "Error al abrir archivo de facturas.\n" RESET);
-        return;
-    }
-
-    fprintf(archivo, "\n========== FACTURA ==========\n");
-    fprintf(archivo, "Cedula: %s\n", cedula);
-    fprintf(archivo, "Nombre: %s\n", nombre);
-    fprintf(archivo, "Evento: %s\n", evento->nombre);
-    fprintf(archivo, "Productora: %s\n", evento->productora);
-    fprintf(archivo, "Sitio: %s\n", evento->sitio->nombre);
-    fprintf(archivo, "Fecha evento: %s\n", evento->fecha);
-
-    fprintf(archivo, "\nSubtotal: %.2f\n", subtotal);
-    fprintf(archivo, "Servicio (5%%): %.2f\n", servicio);
-    fprintf(archivo, "TOTAL: %.2f\n", total);
-
-    fprintf(archivo, "=============================\n");
-
-    fclose(archivo);
-}
-
-
 // ==================== CONSULTA POR EVENTO ====================
 
 
@@ -215,15 +302,18 @@ time_t fechaATimestamp(const char *fecha) {
 
 void consultarEventos() {
     char fechaInicial[20];
+    char detalleErrorFecha[160];
     
     printf(MENU_TITLE "\n===== CONSULTA DE EVENTOS =====\n" RESET);
     printf(MENU_INPUT "Ingrese fecha inicial (dd/mm/aaaa): " RESET);
-    scanf("%s", fechaInicial);
-    
-    // Validar formato básico
-    int d, m, a;
-    if (sscanf(fechaInicial, "%d/%d/%d", &d, &m, &a) != 3) {
-        printf(MSG_ERROR "Formato de fecha invalido. Use dd/mm/aaaa\n" RESET);
+    if (scanf("%19s", fechaInicial) != 1) {
+        printf(MSG_ERROR "No se pudo leer la fecha. Use el formato dd/mm/aaaa.\n" RESET);
+        limpiarBufferEntrada();
+        return;
+    }
+
+    if (!validarFechaConDetalle(fechaInicial, detalleErrorFecha, sizeof(detalleErrorFecha))) {
+        printf(MSG_ERROR "Fecha invalida: %s.\n" RESET, detalleErrorFecha);
         return;
     }
     
@@ -232,7 +322,11 @@ void consultarEventos() {
     printf(MENU_TITLE "      EVENTOS FUTUROS (desde %s)\n" RESET, fechaInicial);
     printf(MENU_BORDER "========================================\n" RESET);
     
-    int eventosFuturos[100];
+    int *eventosFuturos = (int *)malloc((size_t)totalEventos * sizeof(int));
+    if (eventosFuturos == NULL) {
+        printf(MSG_ERROR "Error de memoria al listar eventos.\n" RESET);
+        return;
+    }
     int countFuturos = 0;
     
     for (int i = 0; i < totalEventos; i++) {
@@ -246,20 +340,27 @@ void consultarEventos() {
     
     if (countFuturos == 0) {
         printf(MSG_WARNING "No hay eventos futuros desde la fecha indicada.\n" RESET);
+        free(eventosFuturos);
         return;
     }
     
     // Seleccionar evento
     int seleccion;
     printf(MENU_INPUT "\nSeleccione un evento (1-%d): " RESET, countFuturos);
-    scanf("%d", &seleccion);
+    if (!leerEnteroSeguro(NULL, &seleccion)) {
+        printf(MSG_ERROR "Seleccion invalida.\n" RESET);
+        free(eventosFuturos);
+        return;
+    }
     
     if (seleccion < 1 || seleccion > countFuturos) {
         printf(MSG_ERROR "Seleccion invalida.\n" RESET);
+        free(eventosFuturos);
         return;
     }
     
     Evento *evento = &eventos[eventosFuturos[seleccion - 1]];
+    free(eventosFuturos);
     
     mostrarDetallesEvento(evento);
 }
@@ -272,7 +373,7 @@ void mostrarDetallesEvento(Evento *evento) {
     printf(COLOR_EVENTO BOLD "Nombre: " RESET "%s\n", evento->nombre);
     printf(COLOR_EVENTO BOLD "Productora: " RESET "%s\n", evento->productora);
     printf(COLOR_EVENTO BOLD "Sitio: " RESET "%s\n", evento->sitio->nombre);
-    printf(COLOR_EVENTO BOLD "Fecha: " RESET "%s\n", evento->fecha);
+    printf(COLOR_EVENTO BOLD "Fecha evento: " RESET "%s\n", evento->fecha);
     
     printf(MENU_BORDER "----------------------------------------\n" RESET);
     printf(COLOR_SITIO BOLD "SECTORES:\n" RESET);
@@ -312,7 +413,7 @@ void mostrarDetallesEventoTabla(Evento *evento) {
     printf(COLOR_EVENTO BOLD "Nombre:      " RESET "%s\n", evento->nombre);
     printf(COLOR_EVENTO BOLD "Productora:  " RESET "%s\n", evento->productora);
     printf(COLOR_EVENTO BOLD "Sitio:       " RESET "%s\n", evento->sitio->nombre);
-    printf(COLOR_EVENTO BOLD "Fecha:       " RESET "%s\n", evento->fecha);
+    printf(COLOR_EVENTO BOLD "Fecha evento:" RESET " %s\n", evento->fecha);
     
     printf(MENU_BORDER "----------------------------------------\n" RESET);
     printf("%-20s %-20s %-20s\n", "Sector", "Precio por asiento", "Disponibles");
@@ -341,12 +442,7 @@ void mostrarDetallesEventoTabla(Evento *evento) {
 }
 
 void menuCliente() {
-    char nombre[50];
-
-    printf("\n" MENU_INPUT "Nombre del cliente: " RESET);
-    scanf("%49s", nombre);
-
-    printf(MSG_SUCCESS "Bienvenid@ %s\n" RESET, nombre);
+    printf(MSG_SUCCESS "Bienvenid@ a la seccion de cliente\n" RESET);
 
     int opcion;
 
@@ -361,8 +457,10 @@ void menuCliente() {
 
         printf(MENU_BORDER "=================================\n" RESET);
 
-        printf(MENU_INPUT "Seleccione: " RESET);
-        scanf("%d", &opcion);
+        if (!leerEnteroSeguro(MENU_INPUT "Seleccione: " RESET, &opcion)) {
+            printf(MSG_ERROR "Entrada invalida\n" RESET);
+            continue;
+        }
 
         switch(opcion) {
             case 1:
