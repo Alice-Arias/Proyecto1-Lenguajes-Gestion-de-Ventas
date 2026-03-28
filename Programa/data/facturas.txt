@@ -1,0 +1,206 @@
+
+========== FACTURA ==========
+Cedula: 118670474
+Nombre: luis
+Evento: Comic Con
+Productora: FanWorld
+Sitio: Centro de Eventos
+Fecha evento: 10/07/2030
+
+Subtotal: 112000.00
+Servicio (5%): 5600.00
+TOTAL: 117600.00
+=============================
+
+========== FACTURA ==========
+Cedula: 111111111
+Nombre: Ana Lopez
+Evento: Banda
+Productora: Music X
+Sitio: Estadio Nacional
+Fecha evento: 20/3/2029
+
+Subtotal: 19000.00
+Servicio (5%): 950.00
+TOTAL: 19950.00
+=============================
+========== FACTURA ==========
+Cedula: 222222222
+Nombre: Carlos Ruiz
+Evento: Obra Clasica
+Productora: Teatro CR
+Sitio: Teatro Nacional
+Fecha evento: 15/4/2029
+
+Subtotal: 15000.00
+Servicio (5%): 750.00
+TOTAL: 15750.00
+=============================
+========== FACTURA ==========
+Cedula: 333333333
+Nombre: Laura Gomez
+Evento: Expo Tecnologia
+Productora: TechCorp
+Sitio: Centro de Eventos
+Fecha evento: 10/5/2029
+
+Subtotal: 12000.00
+Servicio (5%): 600.00
+TOTAL: 12600.00
+=============================
+========== FACTURA ==========
+Cedula: 444444444
+Nombre: Mario Solano
+Evento: Concierto Luz
+Productora: Producciones Caribe
+Sitio: Teatro Luz
+Fecha evento: 05/6/2029
+
+Subtotal: 10000.00
+Servicio (5%): 500.00
+TOTAL: 10500.00
+=============================
+========== FACTURA ==========
+Cedula: 555555555
+Nombre: Patricia Mora
+Evento: Final Futbol
+Productora: Deportes SA
+Sitio: Arena Deportiva
+Fecha evento: 25/7/2029
+
+Subtotal: 18000.00
+Servicio (5%): 900.00
+TOTAL: 18900.00
+=============================
+========== FACTURA ==========
+Cedula: 666666666
+Nombre: Luis Fernandez
+Evento: Festival Cultural
+Productora: Cultura Viva
+Sitio: Centro Cultural
+Fecha evento: 12/8/2029
+
+Subtotal: 9000.00
+Servicio (5%): 450.00
+TOTAL: 9450.00
+=============================
+========== FACTURA ==========
+Cedula: 777777777
+Nombre: Rosa Jimenez
+Evento: Rock Fest
+Productora: ConcertZone
+Sitio: Estadio Nacional
+Fecha evento: 15/11/2029
+
+Subtotal: 25000.00
+Servicio (5%): 1250.00
+TOTAL: 26250.00
+=============================
+========== FACTURA ==========
+Cedula: 888888888
+Nombre: Pedro Vega
+Evento: Jazz Night
+Productora: Sonidos Latinos
+Sitio: Teatro Nacional
+Fecha evento: 05/12/2029
+
+Subtotal: 20000.00
+Servicio (5%): 1000.00
+TOTAL: 21000.00
+=============================
+========== FACTURA ==========
+Cedula: 999999999
+Nombre: Silvia Castro
+Evento: Tecnologia Expo
+Productora: TechCorp
+Sitio: Centro de Eventos
+Fecha evento: 20/01/2030
+
+Subtotal: 18000.00
+Servicio (5%): 900.00
+TOTAL: 18900.00
+=============================
+========== FACTURA ==========
+Cedula: 101010101
+Nombre: Andres Salas
+Evento: Festival de Cine
+Productora: Cinefilo
+Sitio: Teatro Luz
+Fecha evento: 10/02/2030
+
+Subtotal: 12000.00
+Servicio (5%): 600.00
+TOTAL: 12600.00
+=============================
+========== FACTURA ==========
+Cedula: 111111112
+Nombre: Mariana Chacon
+Evento: Maraton Deportiva
+Productora: Deportes SA
+Sitio: Arena Deportiva
+Fecha evento: 25/03/2030
+
+Subtotal: 22000.00
+Servicio (5%): 1100.00
+TOTAL: 23100.00
+=============================
+========== FACTURA ==========
+Cedula: 121212121
+Nombre: Roberto Quesada
+Evento: Arte Contemporaneo
+Productora: Cultura Viva
+Sitio: Centro Cultural
+Fecha evento: 15/04/2030
+
+Subtotal: 15000.00
+Servicio (5%): 750.00
+TOTAL: 15750.00
+=============================
+========== FACTURA ==========
+Cedula: 131313131
+Nombre: Daniela Vargas
+Evento: Electro Party
+Productora: MusicNow
+Sitio: Estadio Nacional
+Fecha evento: 01/05/2030
+
+Subtotal: 30000.00
+Servicio (5%): 1500.00
+TOTAL: 31500.00
+=============================
+========== FACTURA ==========
+Cedula: 141414141
+Nombre: Esteban Calvo
+Evento: Sinfonia Primavera
+Productora: Orquesta Nacional
+Sitio: Teatro Nacional
+Fecha evento: 20/06/2030
+
+Subtotal: 25000.00
+Servicio (5%): 1250.00
+TOTAL: 26250.00
+=============================
+========== FACTURA ==========
+Cedula: 151515151
+Nombre: Valeria Campos
+Evento: Comic Con
+Productora: FanWorld
+Sitio: Centro de Eventos
+Fecha evento: 10/07/2030
+
+Subtotal: 28000.00
+Servicio (5%): 1400.00
+TOTAL: 29400.00
+=============================
+========== FACTURA ==========
+Cedula: 161616161
+Nombre: Fernando Ruiz
+Evento: Feria Gastronomica
+Productora: Sabores CR
+Sitio: Centro Cultural
+Fecha evento: 25/08/2030
+
+Subtotal: 9000.00
+Servicio (5%): 450.00
+TOTAL: 9450.00
+=============================
