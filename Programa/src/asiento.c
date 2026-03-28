@@ -8,12 +8,24 @@
 #include "../include/sitio.h"
 #include "../include/factura.h"
 
+/*
+ * Objetivo: Avanzar un puntero de texto hasta omitir espacios y tabulaciones iniciales.
+ * Entradas: direccion de un puntero char* editable.
+ * Salidas: actualiza el puntero para que apunte al primer caracter significativo.
+ * Restricciones: texto y *texto deben ser punteros validos.
+ */
 static void limpiarEspaciosInicio(char **texto) {
     while (**texto == ' ' || **texto == '\t') {
         (*texto)++;
     }
 }
 
+/*
+ * Objetivo: Buscar en memoria un evento por su nombre exacto.
+ * Entradas: nombreEvento a localizar.
+ * Salidas: puntero al evento encontrado o NULL si no existe.
+ * Restricciones: la comparacion es sensible a mayusculas/minusculas.
+ */
 static Evento *buscarEventoPorNombre(const char *nombreEvento) {
     for (int i = 0; i < totalEventos; i++) {
         if (strcmp(eventos[i].nombre, nombreEvento) == 0) {
@@ -23,6 +35,12 @@ static Evento *buscarEventoPorNombre(const char *nombreEvento) {
     return NULL;
 }
 
+/*
+ * Objetivo: Obtener el indice de sector por su inicial dentro de un evento.
+ * Entradas: evento a revisar e inicial de sector.
+ * Salidas: indice de sector o -1 si no se encuentra coincidencia.
+ * Restricciones: evento y su sitio deben estar inicializados.
+ */
 static int buscarSectorPorInicial(const Evento *evento, char inicial) {
     char inicialMayus = (char)toupper((unsigned char)inicial);
     for (int s = 0; s < evento->sitio->totalSectores; s++) {
@@ -35,6 +53,12 @@ static int buscarSectorPorInicial(const Evento *evento, char inicial) {
     return -1;
 }
 
+/*
+ * Objetivo: Marcar como vendidos los asientos listados en el detalle de una factura.
+ * Entradas: evento destino y cadena detalleAsientos en formato "A1(1000), B2(2000)".
+ * Salidas: actualiza disponibilidad del evento en memoria.
+ * Restricciones: ignora tokens invalidos o fuera de rango sin detener el proceso.
+ */
 static void aplicarDetalleFacturaAEvento(Evento *evento, const char *detalleAsientos) {
     if (evento == NULL || detalleAsientos == NULL || detalleAsientos[0] == '\0' || strcmp(detalleAsientos, "N/A") == 0) {
         return;
@@ -67,6 +91,12 @@ static void aplicarDetalleFacturaAEvento(Evento *evento, const char *detalleAsie
     }
 }
 
+/*
+ * Objetivo: Crear un arreglo dinamico de asientos codificados por inicial y numero.
+ * Entradas: cantidad de asientos e inicial del sector.
+ * Salidas: puntero al arreglo de Asiento creado o NULL si falla.
+ * Restricciones: cantidad debe ser mayor a 0 y requiere memoria disponible.
+ */
 Asiento* crearAsientos(int cantidad, char inicial) {
         if (cantidad <= 0) {
             printf(MSG_ERROR "Cantidad invalida de asientos.\n" RESET);
@@ -109,6 +139,12 @@ Asiento* crearAsientos(int cantidad, char inicial) {
     return asientos;
 }
 
+/*
+ * Objetivo: Liberar memoria del arreglo de asientos y sus codigos internos.
+ * Entradas: puntero al arreglo y cantidad de elementos.
+ * Salidas: recursos dinamicos liberados.
+ * Restricciones: cantidad debe corresponder al arreglo recibido.
+ */
 void liberarAsientos(Asiento *asientos, int cantidad) {
     if (asientos != NULL) {
         for (int i = 0; i < cantidad; i++) {
@@ -120,6 +156,12 @@ void liberarAsientos(Asiento *asientos, int cantidad) {
     }
 }
 
+/*
+ * Objetivo: Imprimir en consola el listado de asientos de un sector.
+ * Entradas: arreglo de asientos y cantidad total.
+ * Salidas: despliegue visual de codigos de asiento.
+ * Restricciones: asientos no debe ser NULL y cantidad debe ser positiva.
+ */
 void mostrarAsientos(const Asiento *asientos, int cantidad) {
     if (asientos == NULL || cantidad <= 0) {
         printf(MSG_WARNING "No hay asientos para mostrar.\n" RESET);
@@ -142,6 +184,12 @@ void mostrarAsientos(const Asiento *asientos, int cantidad) {
 }
 
 
+/*
+ * Objetivo: Guardar la matriz de disponibilidad de asientos para todos los eventos.
+ * Entradas: ruta del archivo destino.
+ * Salidas: archivo de asientos actualizado en disco.
+ * Restricciones: usa el estado global de eventos previamente cargados.
+ */
 void guardarAsientosEnArchivo(const char *ruta) {
     FILE *f = fopen(ruta, "w");
     if (!f) {
@@ -166,6 +214,12 @@ void guardarAsientosEnArchivo(const char *ruta) {
 }
 
     
+/*
+ * Objetivo: Cargar estado de disponibilidad de asientos desde archivo.
+ * Entradas: ruta del archivo fuente.
+ * Salidas: actualiza disponibilidad por evento y sector en memoria.
+ * Restricciones: eventos y sectores deben estar creados antes de cargar.
+ */
 void cargarAsientosDesdeArchivo(const char *ruta) {
     FILE *f = fopen(ruta, "r");
     if (!f) return;
@@ -210,6 +264,12 @@ void cargarAsientosDesdeArchivo(const char *ruta) {
     printf(MSG_SUCCESS "Asientos cargados desde %s.\n" RESET, ruta);
 }
 
+/*
+ * Objetivo: Sincronizar la disponibilidad de asientos en base a facturas almacenadas.
+ * Entradas: ruta del archivo de facturas.
+ * Salidas: marca como vendidos los asientos incluidos en el detalle de facturas.
+ * Restricciones: requiere que facturaCargarTodas pueda leer el formato vigente.
+ */
 void sincronizarAsientosConFacturas(const char *rutaFacturas) {
     Factura *facturas = NULL;
     int cantidad = 0;

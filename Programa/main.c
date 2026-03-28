@@ -8,6 +8,12 @@
 #include "include/factura.h"
 #include "include/colors.h"
 
+/*
+ * Objetivo: Inicializar el sistema, mostrar el menu principal y coordinar la carga/guardado de datos.
+ * Entradas: No recibe parametros directos; utiliza archivos de datos y entradas por consola.
+ * Salidas: Retorna 0 al finalizar la ejecucion normal del programa.
+ * Restricciones: Requiere que los modulos de administracion, cliente y persistencia esten disponibles.
+ */
 int main()
 {
     cargarUsuarios();

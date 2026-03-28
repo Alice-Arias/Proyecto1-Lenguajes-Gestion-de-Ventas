@@ -10,7 +10,12 @@ SitioEvento *listaSitios = NULL;
 int cantidadSitios = 0;
 
 
-
+/*
+ * Objetivo: Inicializar el contenedor dinamico de sitios en estado vacio.
+ * Entradas: No recibe parametros.
+ * Salidas: Reinicia listaSitios y cantidadSitios.
+ * Restricciones: si ya existen datos en memoria, se liberan antes de reinicializar.
+ */
 void inicializarSitios() {
     if (listaSitios != NULL) {
         liberarSitios();
@@ -20,6 +25,12 @@ void inicializarSitios() {
 }
 
 
+/*
+ * Objetivo: Liberar todos los sitios y sus sectores asociados.
+ * Entradas: No recibe parametros.
+ * Salidas: Memoria de sitios completamente liberada.
+ * Restricciones: debe llamarse antes de finalizar para evitar fugas de memoria.
+ */
 void liberarSitios() {
     for (int i = 0; i < cantidadSitios; i++) {
         resetSectoresDeSitio(&listaSitios[i]);
@@ -30,6 +41,12 @@ void liberarSitios() {
 }
 
 
+/*
+ * Objetivo: Agregar un nuevo sitio al arreglo dinamico evitando duplicados por nombre.
+ * Entradas: nombre, ubicacion y web del sitio.
+ * Salidas: Inserta un sitio nuevo y actualiza cantidadSitios.
+ * Restricciones: nombre debe ser unico dentro de la lista actual.
+ */
 void agregarSitio(const char *nombre, const char *ubicacion, const char *web) {
 
     // Validar duplicados
@@ -69,6 +86,12 @@ void agregarSitio(const char *nombre, const char *ubicacion, const char *web) {
 }
 
 
+/*
+ * Objetivo: Agregar un sector a un sitio existente con sus asientos inicializados.
+ * Entradas: sitio destino, nombre del sector, inicial y cantidad de espacios.
+ * Salidas: Amplia el arreglo de sectores del sitio.
+ * Restricciones: cantidad > 0 y nombreSector no repetido dentro del sitio.
+ */
 void agregarSectorASitio(SitioEvento *sitio, const char *nombreSector, char inicial, int cantidad) {
 
     if (cantidad <= 0) {
@@ -102,6 +125,12 @@ void agregarSectorASitio(SitioEvento *sitio, const char *nombreSector, char inic
     printf(MSG_SUCCESS "Sector '%s' agregado correctamente.\n" RESET, nombreSector);
 }
 
+/*
+ * Objetivo: Eliminar todos los sectores de un sitio y dejarlo sin espacios.
+ * Entradas: puntero al sitio a reiniciar.
+ * Salidas: libera memoria de sectores y pone totalSectores en 0.
+ * Restricciones: sitio debe apuntar a una estructura valida.
+ */
 void resetSectoresDeSitio(SitioEvento *sitio) {
 
     for (int i = 0; i < sitio->totalSectores; i++) {
@@ -116,6 +145,12 @@ void resetSectoresDeSitio(SitioEvento *sitio) {
 }
 
 
+/*
+ * Objetivo: Mostrar el listado actual de sitios registrados en memoria.
+ * Entradas: No recibe parametros.
+ * Salidas: imprime nombre, ubicacion y web de cada sitio.
+ * Restricciones: usa el estado global listaSitios/cantidadSitios.
+ */
 void mostrarSitios() {
 
     printf("\n" MENU_BORDER "====================================\n" RESET);
@@ -134,6 +169,12 @@ void mostrarSitios() {
 }
 
 
+/*
+ * Objetivo: Mostrar todos los sectores pertenecientes a un sitio especifico.
+ * Entradas: puntero al sitio del cual se desea listar sectores.
+ * Salidas: imprime cada sector usando mostrarSector().
+ * Restricciones: sitio debe ser valido y estar inicializado.
+ */
 void mostrarSectoresDeSitio(SitioEvento *sitio) {
 
     printf("\n" MENU_BORDER "====================================\n" RESET);
@@ -145,6 +186,12 @@ void mostrarSectoresDeSitio(SitioEvento *sitio) {
     }
 }
 
+/*
+ * Objetivo: Cargar sitios desde un archivo de texto y agregarlos en memoria.
+ * Entradas: ruta del archivo fuente.
+ * Salidas: inserta sitios validos al arreglo dinamico.
+ * Restricciones: cada linea debe contener nombre,ubicacion[,web].
+ */
 void cargarSitiosDesdeArchivo(const char *ruta) {
 
     FILE *archivo = fopen(ruta, "r");
@@ -185,6 +232,12 @@ void cargarSitiosDesdeArchivo(const char *ruta) {
 }
 
 
+/*
+ * Objetivo: Guardar todos los sitios actuales en archivo de texto plano.
+ * Entradas: ruta del archivo destino.
+ * Salidas: escribe una linea por sitio con nombre, ubicacion y web.
+ * Restricciones: requiere permisos de escritura sobre la ruta indicada.
+ */
 void guardarSitiosEnArchivo(const char *ruta) {
 
     FILE *archivo = fopen(ruta, "w");

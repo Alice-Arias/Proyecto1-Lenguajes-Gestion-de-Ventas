@@ -10,16 +10,34 @@
 #include "../include/sector.h"
 #include "../include/factura.h"
 
+/*
+ * Objetivo: Indicar si un anio es bisiesto bajo reglas del calendario gregoriano.
+ * Entradas: anio numerico.
+ * Salidas: 1 si es bisiesto, 0 en caso contrario.
+ * Restricciones: espera anios positivos dentro de rango razonable.
+ */
 static int esBisiesto(int anio) {
     return (anio % 400 == 0) || (anio % 4 == 0 && anio % 100 != 0);
 }
 
+/*
+ * Objetivo: Copiar un mensaje de error en buffer con proteccion de limites.
+ * Entradas: buffer destino, tamanio del buffer y texto origen.
+ * Salidas: escribe el texto cuando el destino es valido.
+ * Restricciones: tam debe ser mayor a 0 para copiar.
+ */
 static void setMensajeError(char *mensaje, size_t tam, const char *texto) {
     if (mensaje != NULL && tam > 0) {
         snprintf(mensaje, tam, "%s", texto);
     }
 }
 
+/*
+ * Objetivo: Validar fecha de entrada y generar detalle de error en caso invalido.
+ * Entradas: fecha en formato texto, buffer de mensaje y tamanio.
+ * Salidas: 1 si fecha valida, 0 si hay error.
+ * Restricciones: formato esperado dd/mm/aaaa.
+ */
 static int validarFechaConDetalle(const char *fecha, char *mensaje, size_t tam) {
     int d, m, a;
     int diasMes[] = {31,28,31,30,31,30,31,31,30,31,30,31};
@@ -56,10 +74,22 @@ static int validarFechaConDetalle(const char *fecha, char *mensaje, size_t tam) 
     return 1;
 }
 
+/*
+ * Objetivo: Validar fecha de forma booleana sin mensaje detallado.
+ * Entradas: fecha en texto.
+ * Salidas: 1 valida, 0 invalida.
+ * Restricciones: delega en validarFechaConDetalle().
+ */
 static int esFechaValida(const char *fecha) {
     return validarFechaConDetalle(fecha, NULL, 0);
 }
 
+/*
+ * Objetivo: Validar cedula y reportar razon de invalidez.
+ * Entradas: cedula en texto, buffer de mensaje y tamanio.
+ * Salidas: 1 si cumple reglas, 0 en caso contrario.
+ * Restricciones: exige exactamente 9 digitos numericos.
+ */
 static int validarCedulaConDetalle(const char *cedula, char *mensaje, size_t tam) {
     if (cedula == NULL) {
         setMensajeError(mensaje, tam, "la cedula no puede estar vacia");
@@ -81,15 +111,33 @@ static int validarCedulaConDetalle(const char *cedula, char *mensaje, size_t tam
     return 1;
 }
 
+/*
+ * Objetivo: Validar cedula de forma booleana sin mensaje de detalle.
+ * Entradas: cedula en texto.
+ * Salidas: 1 valida, 0 invalida.
+ * Restricciones: delega en validarCedulaConDetalle().
+ */
 static int esCedulaValida(const char *cedula) {
     return validarCedulaConDetalle(cedula, NULL, 0);
 }
 
+/*
+ * Objetivo: Limpiar el buffer de entrada estandar.
+ * Entradas: No recibe parametros.
+ * Salidas: descarta caracteres hasta fin de linea o EOF.
+ * Restricciones: usar tras scanf con error de parseo.
+ */
 static void limpiarBufferEntrada(void) {
     int c;
     while ((c = getchar()) != '\n' && c != EOF) {}
 }
 
+/*
+ * Objetivo: Leer un entero de forma segura para menus cliente.
+ * Entradas: prompt opcional y puntero destino.
+ * Salidas: 1 si lectura correcta, 0 si invalida.
+ * Restricciones: valor no debe ser NULL.
+ */
 static int leerEnteroSeguro(const char *prompt, int *valor) {
     if (prompt != NULL) {
         printf("%s", prompt);
@@ -101,6 +149,12 @@ static int leerEnteroSeguro(const char *prompt, int *valor) {
     return 1;
 }
 
+/*
+ * Objetivo: Construir la cadena de detalle de asientos para la factura.
+ * Entradas: evento, indice de sector, arreglo de indices de asientos, cantidad, buffer destino y tamanio (tam).
+ * Salidas: detalle en formato "A1(precio), A2(precio), ..." en el buffer destino.
+ * Restricciones: destino debe tener al menos tam bytes de espacio disponible.
+ */
 static void construirDetalleAsientos(Evento *evento, int sectorIdx, int asientos[], int cantidad, char *destino, size_t tam) {
     destino[0] = '\0';
     char inicial = evento->sitio->sectores[sectorIdx].inicial;
@@ -117,6 +171,12 @@ static void construirDetalleAsientos(Evento *evento, int sectorIdx, int asientos
     }
 }
 
+/*
+ * Objetivo: Orquestar el flujo completo de compra de boletos para un cliente.
+ * Entradas: seleccion de evento/sector/asientos y datos de comprador por consola.
+ * Salidas: marca asientos vendidos, genera y guarda factura.
+ * Restricciones: requiere eventos y sectores cargados previamente.
+ */
 void comprarBoletos() {
     int eventoIdx;
 
@@ -185,6 +245,12 @@ printf(MSG_SUCCESS "Datos registrados correctamente.\n" RESET);
     free(asientosSeleccionados);
 }
 
+/*
+ * Objetivo: Permitir al cliente elegir un sector de un evento.
+ * Entradas: puntero al evento.
+ * Salidas: indice de sector (base 0) o -1 si hay error.
+ * Restricciones: evento debe tener al menos un sector.
+ */
 int seleccionarSector(Evento *evento) {
     int sectorIdx;
 
@@ -210,6 +276,12 @@ int seleccionarSector(Evento *evento) {
     return sectorIdx - 1;
 }
 
+/*
+ * Objetivo: Registrar seleccion de asientos disponibles para un sector.
+ * Entradas: evento, indice de sector y arreglo de salida seleccionados.
+ * Salidas: cantidad de asientos elegidos.
+ * Restricciones: solo agrega asientos disponibles y en rango valido.
+ */
 int seleccionarAsientos(Evento *evento, int sectorIdx, int seleccionados[]) {
     int cantidad = 0;
     int opcion;
@@ -267,6 +339,12 @@ printf(MSG_SUCCESS "Asiento agregado.\n" RESET);
 }
 
 
+/*
+ * Objetivo: Calcular subtotal de compra segun asientos seleccionados.
+ * Entradas: evento, sector y arreglo/cantidad de asientos.
+ * Salidas: monto subtotal en float.
+ * Restricciones: asientos deben corresponder al sector indicado.
+ */
 float calcularSubtotal(Evento *evento, int sectorIdx, int asientos[], int cantidad) {
     float subtotal = 0.0;
 
@@ -279,6 +357,12 @@ float calcularSubtotal(Evento *evento, int sectorIdx, int asientos[], int cantid
 // ==================== CONSULTA POR EVENTO ====================
 
 
+/*
+ * Objetivo: Comparar dos fechas y determinar si fecha1 es igual o posterior a fecha2.
+ * Entradas: fecha1 y fecha2 en formato dd/mm/aaaa.
+ * Salidas: 1 si fecha1 >= fecha2, 0 en caso contrario.
+ * Restricciones: asume formato correcto en ambas fechas.
+ */
 int compararFechas(const char *fecha1, const char *fecha2) {
     int d1, m1, a1, d2, m2, a2;
     sscanf(fecha1, "%d/%d/%d", &d1, &m1, &a1);
@@ -289,7 +373,12 @@ int compararFechas(const char *fecha1, const char *fecha2) {
     return d1 >= d2;
 }
 
-// Función auxiliar para convertir fecha a timestamp 
+/*
+ * Objetivo: Convertir una fecha textual a timestamp del sistema.
+ * Entradas: fecha en formato dd/mm/aaaa.
+ * Salidas: time_t correspondiente a la fecha.
+ * Restricciones: comportamiento indefinido si la fecha no cumple formato esperado.
+ */
 time_t fechaATimestamp(const char *fecha) {
     int d, m, a;
     sscanf(fecha, "%d/%d/%d", &d, &m, &a);
@@ -300,6 +389,12 @@ time_t fechaATimestamp(const char *fecha) {
     return mktime(&tm);
 }
 
+/*
+ * Objetivo: Consultar eventos futuros a partir de una fecha inicial ingresada.
+ * Entradas: fecha inicial y seleccion de evento por consola.
+ * Salidas: muestra lista de eventos futuros y detalle del evento elegido.
+ * Restricciones: requiere al menos un evento que cumpla el filtro.
+ */
 void consultarEventos() {
     char fechaInicial[20];
     char detalleErrorFecha[160];
@@ -365,6 +460,12 @@ void consultarEventos() {
     mostrarDetallesEvento(evento);
 }
 
+/*
+ * Objetivo: Mostrar detalle de un evento con precios por sector y disponibilidad.
+ * Entradas: puntero al evento a mostrar.
+ * Salidas: impresion formateada en consola.
+ * Restricciones: evento y sus estructuras internas deben ser validos.
+ */
 void mostrarDetallesEvento(Evento *evento) {
     printf("\n" MENU_BORDER "========================================\n" RESET);
     printf(MENU_TITLE "         DETALLES DEL EVENTO\n" RESET);
@@ -405,6 +506,12 @@ void mostrarDetallesEvento(Evento *evento) {
     printf(MENU_BORDER "========================================\n" RESET);
 }
 
+/*
+ * Objetivo: Mostrar detalle tabular alternativo de un evento.
+ * Entradas: puntero al evento a mostrar.
+ * Salidas: tabla con sector, precio y asientos disponibles.
+ * Restricciones: funcion de apoyo visual; no altera estado del sistema.
+ */
 void mostrarDetallesEventoTabla(Evento *evento) {
     printf("\n" MENU_BORDER "========================================\n" RESET);
     printf(MENU_TITLE "         DETALLES DEL EVENTO\n" RESET);
@@ -441,6 +548,12 @@ void mostrarDetallesEventoTabla(Evento *evento) {
     printf(MENU_BORDER "========================================\n" RESET);
 }
 
+/*
+ * Objetivo: Gestionar el menu de opciones para clientes.
+ * Entradas: opcion seleccionada por consola.
+ * Salidas: ejecuta consulta, compra o retorno al menu principal.
+ * Restricciones: el bucle finaliza cuando opcion es 3.
+ */
 void menuCliente() {
     printf(MSG_SUCCESS "Bienvenid@ a la seccion de cliente\n" RESET);
 

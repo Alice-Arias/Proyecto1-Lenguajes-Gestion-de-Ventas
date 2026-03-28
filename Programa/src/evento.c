@@ -9,6 +9,12 @@
 Evento *eventos = NULL;
 int totalEventos = 0;
 
+/*
+ * Objetivo: Limpiar caracteres pendientes del buffer de entrada estandar.
+ * Entradas: No recibe parametros.
+ * Salidas: consume hasta salto de linea o EOF.
+ * Restricciones: debe llamarse despues de una lectura invalida con scanf.
+ */
 static void limpiarBufferEntradaEvento(void)
 {
     int c;
@@ -17,6 +23,12 @@ static void limpiarBufferEntradaEvento(void)
     }
 }
 
+/*
+ * Objetivo: Leer un entero con validacion basica desde consola.
+ * Entradas: prompt opcional y puntero de salida para el valor.
+ * Salidas: retorna 1 si la lectura fue valida, 0 en caso contrario.
+ * Restricciones: valor no debe ser NULL.
+ */
 static int leerEnteroEvento(const char *prompt, int *valor)
 {
     if (prompt != NULL)
@@ -31,6 +43,12 @@ static int leerEnteroEvento(const char *prompt, int *valor)
     return 1;
 }
 
+/*
+ * Objetivo: Leer un flotante con validacion basica desde consola.
+ * Entradas: prompt opcional y puntero de salida para el valor.
+ * Salidas: retorna 1 si la lectura fue valida, 0 en caso contrario.
+ * Restricciones: valor no debe ser NULL.
+ */
 static int leerFloatEvento(const char *prompt, float *valor)
 {
     if (prompt != NULL)
@@ -45,11 +63,23 @@ static int leerFloatEvento(const char *prompt, float *valor)
     return 1;
 }
 
+/*
+ * Objetivo: Determinar si un anio corresponde a anio bisiesto.
+ * Entradas: anio en formato numerico.
+ * Salidas: 1 si es bisiesto, 0 en caso contrario.
+ * Restricciones: aplica calendario gregoriano.
+ */
 static int esBisiestoEvento(int anio)
 {
     return (anio % 400 == 0) || (anio % 4 == 0 && anio % 100 != 0);
 }
 
+/*
+ * Objetivo: Copiar mensaje de error descriptivo de forma segura en un buffer.
+ * Entradas: buffer destino, tamanio del buffer y texto fuente.
+ * Salidas: escribe el texto en mensaje si el buffer es valido.
+ * Restricciones: tam debe ser mayor a 0 para copiar.
+ */
 static void setMensajeErrorEvento(char *mensaje, size_t tam, const char *texto)
 {
     if (mensaje != NULL && tam > 0)
@@ -58,6 +88,12 @@ static void setMensajeErrorEvento(char *mensaje, size_t tam, const char *texto)
     }
 }
 
+/*
+ * Objetivo: Validar formato y rango de una fecha devolviendo detalle del error.
+ * Entradas: fecha en texto, buffer de mensaje y su tamanio.
+ * Salidas: 1 si la fecha es valida, 0 si detecta error.
+ * Restricciones: espera formato dd/mm/aaaa.
+ */
 static int validarFechaEventoConDetalle(const char *fecha, char *mensaje, size_t tam)
 {
     int d, m, a;
@@ -101,11 +137,23 @@ static int validarFechaEventoConDetalle(const char *fecha, char *mensaje, size_t
     return 1;
 }
 
+/*
+ * Objetivo: Validar una fecha sin necesidad de mensaje detallado.
+ * Entradas: fecha en texto.
+ * Salidas: 1 valida, 0 invalida.
+ * Restricciones: delega en validarFechaEventoConDetalle().
+ */
 static int esFechaValidaEvento(const char *fecha)
 {
     return validarFechaEventoConDetalle(fecha, NULL, 0);
 }
 
+/*
+ * Objetivo: Inicializar el arreglo global de eventos en estado vacio.
+ * Entradas: No recibe parametros.
+ * Salidas: deja eventos en NULL y totalEventos en 0.
+ * Restricciones: libera primero la memoria previa si ya habia eventos.
+ */
 void inicializarEventos()
 {
     if (eventos != NULL)
@@ -116,6 +164,12 @@ void inicializarEventos()
     totalEventos = 0;
 }
 
+/*
+ * Objetivo: Crear un evento nuevo con precios por sector y matriz de disponibilidad.
+ * Entradas: datos del evento, sitio asociado y arreglo de precios por sector.
+ * Salidas: inserta evento en el arreglo global si no hay errores.
+ * Restricciones: no permite nombres de evento duplicados y requiere sitio valido.
+ */
 void crearEvento(const char *nombre, const char *productora, const char *fecha,
                  SitioEvento *sitio, float *preciosPorSector)
 {
@@ -202,6 +256,12 @@ void crearEvento(const char *nombre, const char *productora, const char *fecha,
     printf(MSG_INFO "Evento '%s' creado correctamente en sitio '%s'.\n" RESET, nombre, sitio->nombre);
 }
 
+/*
+ * Objetivo: Solicitar por consola los datos necesarios para crear un evento.
+ * Entradas: No recibe parametros; solicita nombre, productora, fecha, sitio y precios.
+ * Salidas: crea el evento si todas las validaciones se cumplen.
+ * Restricciones: el sitio seleccionado debe existir y tener al menos un sector.
+ */
 void pedirDatosYCrearEvento()
 {
     char nombre[50], productora[50], fecha[20];
@@ -271,6 +331,13 @@ void pedirDatosYCrearEvento()
 
     free(precios);
 }
+
+/*
+ * Objetivo: Liberar recursos dinamicos internos de un evento individual.
+ * Entradas: puntero al evento a liberar.
+ * Salidas: libera precios y matriz disponibilidad del evento.
+ * Restricciones: evento puede ser NULL.
+ */
 void liberarEvento(Evento *evento)
 {
     if (evento == NULL)
@@ -287,6 +354,12 @@ void liberarEvento(Evento *evento)
     }
 }
 
+/*
+ * Objetivo: Liberar todos los eventos cargados en memoria.
+ * Entradas: No recibe parametros.
+ * Salidas: memoria global de eventos liberada y contadores reiniciados.
+ * Restricciones: debe llamarse al finalizar el programa.
+ */
 void liberarEventos()
 {
     for (int i = 0; i < totalEventos; i++)
@@ -298,6 +371,12 @@ void liberarEventos()
     totalEventos = 0;
 }
 
+/*
+ * Objetivo: Guardar eventos y precios por sector en archivo de texto.
+ * Entradas: ruta del archivo destino.
+ * Salidas: persiste una linea por evento.
+ * Restricciones: requiere permisos de escritura en la ruta.
+ */
 void guardarEventosEnArchivo(const char *ruta)
 {
     FILE *f = fopen(ruta, "w");
@@ -322,6 +401,12 @@ void guardarEventosEnArchivo(const char *ruta)
     printf(MSG_INFO "Eventos guardados en %s.\n" RESET, ruta);
 }
 
+/*
+ * Objetivo: Cargar eventos desde archivo y reconstruir su estructura en memoria.
+ * Entradas: ruta del archivo fuente.
+ * Salidas: agrega eventos validos al arreglo global.
+ * Restricciones: los sitios deben haberse cargado antes para asociar cada evento.
+ */
 void cargarEventosDesdeArchivo(const char *ruta)
 {
     FILE *f = fopen(ruta, "r");
@@ -406,6 +491,12 @@ void cargarEventosDesdeArchivo(const char *ruta)
     fclose(f);
 }
 
+/*
+ * Objetivo: Mostrar en consola la lista resumida de eventos registrados.
+ * Entradas: No recibe parametros.
+ * Salidas: impresion de nombre, productora, fecha y sitio por evento.
+ * Restricciones: usa los eventos globales disponibles en memoria.
+ */
 void mostrarEventos()
 {
     printf("\n" MENU_BORDER "====================================\n" RESET);
@@ -428,6 +519,12 @@ void mostrarEventos()
     printf("\n");
 }
 
+/*
+ * Objetivo: Verificar si un asiento de un sector esta disponible para venta.
+ * Entradas: evento, indice de sector e indice de asiento.
+ * Salidas: 1 si esta disponible, 0 si no.
+ * Restricciones: valida rangos de indices antes de acceder.
+ */
 int verificarDisponibilidad(Evento *evento, int sectorIdx, int asientoIdx)
 {
     if (evento == NULL || sectorIdx < 0 || sectorIdx >= evento->sitio->totalSectores)
@@ -437,6 +534,12 @@ int verificarDisponibilidad(Evento *evento, int sectorIdx, int asientoIdx)
     return evento->disponibilidad[sectorIdx][asientoIdx];
 }
 
+/*
+ * Objetivo: Marcar un asiento especifico como vendido.
+ * Entradas: evento, indice de sector e indice de asiento.
+ * Salidas: actualiza disponibilidad a 0 cuando el indice es valido.
+ * Restricciones: no realiza cambios si el evento o indices son invalidos.
+ */
 void marcarVendido(Evento *evento, int sectorIdx, int asientoIdx)
 {
     if (evento == NULL)
@@ -449,6 +552,12 @@ void marcarVendido(Evento *evento, int sectorIdx, int asientoIdx)
     }
 }
 
+/*
+ * Objetivo: Obtener el precio de un asiento segun su sector.
+ * Entradas: evento, indice de sector (determina el precio) e indice de asiento.
+ * Salidas: precio del sector o 0.0 en caso invalido.
+ * Restricciones: sectorIdx debe estar en rango valido.
+ */
 float obtenerPrecioAsiento(Evento *evento, int sectorIdx, int asientoIdx)
 {
     if (evento == NULL || sectorIdx < 0 || sectorIdx >= evento->sitio->totalSectores)
@@ -456,11 +565,23 @@ float obtenerPrecioAsiento(Evento *evento, int sectorIdx, int asientoIdx)
     return evento->precios[sectorIdx].precio;
 }
 
+/*
+ * Objetivo: Calcular recaudacion total de un evento a partir de facturas guardadas.
+ * Entradas: nombre del evento.
+ * Salidas: monto total recaudado para ese evento.
+ * Restricciones: depende del archivo de facturas configurado en ARCHIVO_FACTURAS.
+ */
 float calcularRecaudadoPorEvento(const char *nombreEvento)
 {
     return facturaTotalPorEvento(ARCHIVO_FACTURAS, nombreEvento);
 }
 
+/*
+ * Objetivo: Mostrar estado completo de un evento con asientos y recaudacion por sector.
+ * Entradas: No recibe parametros; solicita por consola el evento a consultar.
+ * Salidas: impresion detallada del estado del evento seleccionado.
+ * Restricciones: requiere que exista al menos un evento cargado.
+ */
 void mostrarEstadoEvento()
 {
     if (totalEventos == 0)

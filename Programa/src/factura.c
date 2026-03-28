@@ -5,16 +5,34 @@
 #include <string.h>
 #include <time.h>
 
+/*
+ * Objetivo: Eliminar salto de linea CR/LF al final de una cadena leida de archivo.
+ * Entradas: texto mutable terminado en '\0'.
+ * Salidas: modifica la cadena in-place removiendo \r y \n finales.
+ * Restricciones: texto debe ser puntero valido.
+ */
 static void trimNuevaLinea(char *texto)
 {
     texto[strcspn(texto, "\r\n")] = '\0';
 }
 
+/*
+ * Objetivo: Verificar si una cadena inicia con un prefijo dado.
+ * Entradas: texto completo y prefijo a comparar.
+ * Salidas: 1 si coincide al inicio, 0 en caso contrario.
+ * Restricciones: texto y prefijo deben ser cadenas validas.
+ */
 static int startsWith(const char *texto, const char *prefijo)
 {
     return strncmp(texto, prefijo, strlen(prefijo)) == 0;
 }
 
+/*
+ * Objetivo: Calcular el siguiente identificador de factura disponible.
+ * Entradas: ruta del archivo de facturas.
+ * Salidas: retorna maxId + 1 o 1 si no hay facturas previas.
+ * Restricciones: depende de que facturaCargarTodas pueda leer el archivo.
+ */
 static int facturaObtenerSiguienteId(const char *ruta)
 {
     Factura *facturas = NULL;
@@ -38,6 +56,12 @@ static int facturaObtenerSiguienteId(const char *ruta)
     return maxId + 1;
 }
 
+/*
+ * Objetivo: Construir una factura en memoria a partir de una compra realizada.
+ * Entradas: estructura destino, evento, cedula, nombre de cliente, subtotal, servicio, total, detalleAsientos e idSugerido.
+ * Salidas: factura inicializada; retorna 1 en exito, 0 en error.
+ * Restricciones: factura, evento, cedula y cliente no deben ser NULL.
+ */
 int facturaCrearDesdeCompra(Factura *factura, const Evento *evento, const char *cedula, const char *cliente,
                             float subtotal, float servicio, float total, const char *detalleAsientos, int idSugerido)
 {
@@ -81,6 +105,12 @@ int facturaCrearDesdeCompra(Factura *factura, const Evento *evento, const char *
     return 1;
 }
 
+/*
+ * Objetivo: Mostrar en consola el detalle completo de una factura.
+ * Entradas: puntero constante a factura.
+ * Salidas: impresion formateada para visualizacion del cliente.
+ * Restricciones: si factura es NULL la funcion finaliza sin imprimir.
+ */
 void facturaMostrarDetalle(const Factura *factura)
 {
     if (factura == NULL)
@@ -111,6 +141,12 @@ void facturaMostrarDetalle(const Factura *factura)
     printf(MENU_BORDER "=================================\n" RESET);
 }
 
+/*
+ * Objetivo: Persistir una factura en el archivo historico de facturacion.
+ * Entradas: ruta destino y puntero a factura.
+ * Salidas: retorna 1 si guarda correctamente, 0 si ocurre error.
+ * Restricciones: si factura->id <= 0 se autogenera un nuevo identificador.
+ */
 int facturaGuardar(const char *ruta, Factura *factura)
 {
     if (ruta == NULL || factura == NULL)
@@ -151,6 +187,12 @@ int facturaGuardar(const char *ruta, Factura *factura)
     return 1;
 }
 
+/*
+ * Objetivo: Cargar todas las facturas de archivo a un arreglo dinamico.
+ * Entradas: ruta, doble puntero de salida y contador de salida.
+ * Salidas: retorna 1 en exito y llena facturas/cantidad.
+ * Restricciones: el formato del archivo debe coincidir con el esperado por el parser.
+ */
 int facturaCargarTodas(const char *ruta, Factura **facturas, int *cantidad)
 {
     if (ruta == NULL || facturas == NULL || cantidad == NULL)
@@ -267,11 +309,23 @@ int facturaCargarTodas(const char *ruta, Factura **facturas, int *cantidad)
     return 1;
 }
 
+/*
+ * Objetivo: Liberar el arreglo dinamico de facturas cargadas.
+ * Entradas: puntero al arreglo de facturas.
+ * Salidas: memoria liberada.
+ * Restricciones: permite recibir NULL de forma segura.
+ */
 void facturaLiberarLista(Factura *facturas)
 {
     free(facturas);
 }
 
+/*
+ * Objetivo: Mostrar en consola el listado resumido de facturas para administracion.
+ * Entradas: ruta del archivo de facturas.
+ * Salidas: tabla con ID, evento, fecha, cliente y subtotal.
+ * Restricciones: requiere facturas existentes para mostrar informacion.
+ */
 void facturaMostrarListadoAdmin(const char *ruta)
 {
     Factura *facturas = NULL;
@@ -302,6 +356,12 @@ void facturaMostrarListadoAdmin(const char *ruta)
     facturaLiberarLista(facturas);
 }
 
+/*
+ * Objetivo: Calcular el total recaudado para un evento especifico.
+ * Entradas: ruta del archivo de facturas y nombreEvento a filtrar.
+ * Salidas: suma total de facturas asociadas al evento.
+ * Restricciones: retorna 0.0 si no hay datos o si nombreEvento es NULL.
+ */
 float facturaTotalPorEvento(const char *ruta, const char *nombreEvento)
 {
     Factura *facturas = NULL;

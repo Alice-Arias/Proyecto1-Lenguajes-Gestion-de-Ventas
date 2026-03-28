@@ -13,6 +13,12 @@
 Usuario *listaUsuarios = NULL;
 int cantidadUsuarios = 0;
 
+/*
+ * Objetivo: Limpiar el buffer de entrada estandar tras lecturas invalidas.
+ * Entradas: No recibe parametros.
+ * Salidas: consume caracteres hasta fin de linea o EOF.
+ * Restricciones: usar despues de scanf fallido.
+ */
 static void limpiarBufferEntradaAdmin(void)
 {
     int c;
@@ -21,6 +27,12 @@ static void limpiarBufferEntradaAdmin(void)
     }
 }
 
+/*
+ * Objetivo: Leer un entero para menus administrativos con validacion.
+ * Entradas: prompt opcional y puntero destino.
+ * Salidas: retorna 1 si lectura correcta, 0 si invalida.
+ * Restricciones: valor no debe ser NULL.
+ */
 static int leerEnteroAdmin(const char *prompt, int *valor)
 {
     if (prompt != NULL)
@@ -35,6 +47,12 @@ static int leerEnteroAdmin(const char *prompt, int *valor)
     return 1;
 }
 
+/*
+ * Objetivo: Cargar usuarios administradores desde archivo de credenciales.
+ * Entradas: No recibe parametros; usa ARCHIVO_USUARIOS.
+ * Salidas: llena listaUsuarios y cantidadUsuarios en memoria.
+ * Restricciones: formato esperado por linea: usuario,hash.
+ */
 void cargarUsuarios()
 {
 
@@ -69,6 +87,12 @@ void cargarUsuarios()
     fclose(archivo);
 }
 
+/*
+ * Objetivo: Validar credenciales y autorizar acceso al menu administrador.
+ * Entradas: usuario y contrasena leidos desde consola.
+ * Salidas: retorna 1 si credenciales validas, 0 en caso contrario.
+ * Restricciones: depende de que cargarUsuarios() haya inicializado la lista.
+ */
 int IniciarSesionAdmin()
 {
 
@@ -103,6 +127,12 @@ int IniciarSesionAdmin()
     return 0;
 }
 
+/*
+ * Objetivo: Administrar operaciones relacionadas con eventos.
+ * Entradas: seleccion de opcion por consola.
+ * Salidas: ejecuta crear/mostrar eventos o retorna al menu anterior.
+ * Restricciones: bucle finaliza cuando opcion es 3.
+ */
 void menuEventos()
 {
     int opcion;
@@ -146,6 +176,12 @@ void menuEventos()
     } while (opcion != 3);
 }
 
+/*
+ * Objetivo: Administrar carga, alta, visualizacion y guardado de sitios.
+ * Entradas: opcion del usuario y, segun caso, datos de sitio/ruta.
+ * Salidas: invoca funciones de mantenimiento de sitios.
+ * Restricciones: bucle finaliza cuando opcion es 5.
+ */
 void menuSitios()
 {
     int opcion;
@@ -222,6 +258,12 @@ void menuSitios()
     } while (opcion != 5);
 }
 
+/*
+ * Objetivo: Administrar sectores de los sitios existentes.
+ * Entradas: opcion del usuario, sitio objetivo y datos de sector.
+ * Salidas: permite listar/agregar/resetear sectores.
+ * Restricciones: valida que el sitio seleccionado este en rango.
+ */
 void menuSectores()
 {
     int opcion;
@@ -336,6 +378,12 @@ void menuSectores()
 
 // ==================== ESTADÍSTICAS ====================
 
+/*
+ * Objetivo: Mostrar top 3 de mes-anio con mayor cantidad de eventos.
+ * Entradas: No recibe parametros; usa arreglo global de eventos.
+ * Salidas: impresion de ranking ordenado de mayor a menor.
+ * Restricciones: requiere eventos cargados para producir resultados.
+ */
 static void mostrarTopMeses()
 {
     struct MesCount
@@ -415,6 +463,12 @@ static void mostrarTopMeses()
     free(meses);
 }
 
+/*
+ * Objetivo: Mostrar top 3 de productoras con mayor recaudacion total.
+ * Entradas: No recibe parametros; lee facturas del archivo configurado.
+ * Salidas: impresion de ranking de productoras por monto.
+ * Restricciones: depende de facturas validas en almacenamiento.
+ */
 static void mostrarTopProductoras()
 {
     struct ProdTotal
@@ -499,6 +553,12 @@ static void mostrarTopProductoras()
     free(prod);
 }
 
+/*
+ * Objetivo: Listar sitios con cantidad de eventos y total recaudado.
+ * Entradas: No recibe parametros; combina datos de eventos y facturas.
+ * Salidas: tabla ordenada por recaudacion descendente.
+ * Restricciones: requiere consistencia entre nombres de sitio en eventos/facturas.
+ */
 static void mostrarSitiosConEventosYRecaudacion()
 {
     struct SitioData
@@ -594,7 +654,12 @@ static void mostrarSitiosConEventosYRecaudacion()
     free(sitios);
 }
 
-// Función que agrupa las tres estadísticas
+/*
+ * Objetivo: Ejecutar el bloque completo de estadisticas administrativas.
+ * Entradas: No recibe parametros.
+ * Salidas: muestra las tres estadisticas requeridas por especificacion.
+ * Restricciones: depende de datos cargados en memoria y facturas en archivo.
+ */
 void mostrarEstadisticas()
 {
     mostrarTopMeses();
@@ -602,6 +667,12 @@ void mostrarEstadisticas()
     mostrarSitiosConEventosYRecaudacion();
 }
 
+/*
+ * Objetivo: Mostrar y gestionar el menu principal de administracion.
+ * Entradas: opcion de menu ingresada por consola.
+ * Salidas: direcciona hacia submenus o vuelve al menu principal.
+ * Restricciones: acceso esperado despues de login exitoso.
+ */
 void menuAdmin()
 {
     int opcion;
@@ -664,6 +735,12 @@ void menuAdmin()
     } while (opcion != 7);
 }
 
+/*
+ * Objetivo: Liberar la memoria del listado de usuarios administradores.
+ * Entradas: No recibe parametros.
+ * Salidas: libera listaUsuarios y reinicia contador.
+ * Restricciones: segura ante lista vacia (free(NULL) es valido).
+ */
 void liberarUsuarios()
 {
     free(listaUsuarios);

@@ -2,6 +2,12 @@
 #include "sistema.h"
 #include "../include/colors.h"
 
+/*
+ * Objetivo: Garantizar que exista el archivo base de usuarios al iniciar el sistema.
+ * Entradas: No recibe parametros; trabaja sobre la ruta fija data/usuarios.txt.
+ * Salidas: Crea el archivo si no existe y muestra mensajes informativos.
+ * Restricciones: Requiere permisos de lectura/escritura sobre la carpeta data.
+ */
 void inicializarSistema() {
     FILE *archivo;
 
