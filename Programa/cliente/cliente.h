@@ -10,6 +10,10 @@ float calcularSubtotal(Evento *evento, int sectorIdx, int asientos[], int cantid
 void mostrarFactura(Evento *evento, char cedula[], char nombre[], float subtotal, float servicio, float total);
 void guardarFactura(Evento *evento, char cedula[], char nombre[], float subtotal, float servicio, float total);
 
+void consultarEventos();
+void mostrarDetallesEvento(Evento *evento);
+void mostrarDetallesEventoTabla(Evento *evento);
+
 void comprarBoletos();
 void menuCliente();
 

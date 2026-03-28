@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>  
 #include "cliente.h"
 #include "../include/colors.h"
 #include "../include/evento.h"
@@ -186,6 +187,159 @@ void guardarFactura(Evento *evento, char cedula[], char nombre[], float subtotal
 
     fclose(archivo);
 }
+
+
+// ==================== CONSULTA POR EVENTO ====================
+
+
+int compararFechas(const char *fecha1, const char *fecha2) {
+    int d1, m1, a1, d2, m2, a2;
+    sscanf(fecha1, "%d/%d/%d", &d1, &m1, &a1);
+    sscanf(fecha2, "%d/%d/%d", &d2, &m2, &a2);
+    
+    if (a1 != a2) return a1 > a2;
+    if (m1 != m2) return m1 > m2;
+    return d1 >= d2;
+}
+
+// Función auxiliar para convertir fecha a timestamp 
+time_t fechaATimestamp(const char *fecha) {
+    int d, m, a;
+    sscanf(fecha, "%d/%d/%d", &d, &m, &a);
+    struct tm tm = {0};
+    tm.tm_mday = d;
+    tm.tm_mon = m - 1;
+    tm.tm_year = a - 1900;
+    return mktime(&tm);
+}
+
+void consultarEventos() {
+    char fechaInicial[20];
+    
+    printf(MENU_TITLE "\n===== CONSULTA DE EVENTOS =====\n" RESET);
+    printf(MENU_INPUT "Ingrese fecha inicial (dd/mm/aaaa): " RESET);
+    scanf("%s", fechaInicial);
+    
+    // Validar formato básico
+    int d, m, a;
+    if (sscanf(fechaInicial, "%d/%d/%d", &d, &m, &a) != 3) {
+        printf(MSG_ERROR "Formato de fecha invalido. Use dd/mm/aaaa\n" RESET);
+        return;
+    }
+    
+    // Mostrar eventos futuros
+    printf("\n" MENU_BORDER "========================================\n" RESET);
+    printf(MENU_TITLE "      EVENTOS FUTUROS (desde %s)\n" RESET, fechaInicial);
+    printf(MENU_BORDER "========================================\n" RESET);
+    
+    int eventosFuturos[100];
+    int countFuturos = 0;
+    
+    for (int i = 0; i < totalEventos; i++) {
+        if (compararFechas(eventos[i].fecha, fechaInicial)) {
+            eventosFuturos[countFuturos] = i;
+            printf("%d. %s - %s\n", countFuturos + 1, 
+                   eventos[i].nombre, eventos[i].fecha);
+            countFuturos++;
+        }
+    }
+    
+    if (countFuturos == 0) {
+        printf(MSG_WARNING "No hay eventos futuros desde la fecha indicada.\n" RESET);
+        return;
+    }
+    
+    // Seleccionar evento
+    int seleccion;
+    printf(MENU_INPUT "\nSeleccione un evento (1-%d): " RESET, countFuturos);
+    scanf("%d", &seleccion);
+    
+    if (seleccion < 1 || seleccion > countFuturos) {
+        printf(MSG_ERROR "Seleccion invalida.\n" RESET);
+        return;
+    }
+    
+    Evento *evento = &eventos[eventosFuturos[seleccion - 1]];
+    
+    mostrarDetallesEvento(evento);
+}
+
+void mostrarDetallesEvento(Evento *evento) {
+    printf("\n" MENU_BORDER "========================================\n" RESET);
+    printf(MENU_TITLE "         DETALLES DEL EVENTO\n" RESET);
+    printf(MENU_BORDER "========================================\n" RESET);
+    
+    printf(COLOR_EVENTO BOLD "Nombre: " RESET "%s\n", evento->nombre);
+    printf(COLOR_EVENTO BOLD "Productora: " RESET "%s\n", evento->productora);
+    printf(COLOR_EVENTO BOLD "Sitio: " RESET "%s\n", evento->sitio->nombre);
+    printf(COLOR_EVENTO BOLD "Fecha: " RESET "%s\n", evento->fecha);
+    
+    printf(MENU_BORDER "----------------------------------------\n" RESET);
+    printf(COLOR_SITIO BOLD "SECTORES:\n" RESET);
+    printf(MENU_BORDER "----------------------------------------\n" RESET);
+    
+    for (int s = 0; s < evento->sitio->totalSectores; s++) {
+        Sector *sector = &evento->sitio->sectores[s];
+        int asientosDisponibles = 0;
+        
+        // Contar asientos disponibles
+        for (int a = 0; a < sector->cantidadEspacios; a++) {
+            if (evento->disponibilidad[s][a] == 1) {
+                asientosDisponibles++;
+            }
+        }
+        
+        printf(COLOR_SITIO "\n Sector: %s\n" RESET, sector->nombre);
+        printf("   %-20s %-15s\n", "Monto por asiento:", "");
+        printf("   %-20s " COLOR_ASIENTO "%.2f\n" RESET, "", evento->precios[s].precio);
+        printf("   %-20s ", "Asientos disponibles:");
+        
+        if (asientosDisponibles > 0) {
+            printf(GREEN "%d\n" RESET, asientosDisponibles);
+        } else {
+            printf(RED "%d (AGOTADOS)\n" RESET, asientosDisponibles);
+        }
+    }
+    
+    printf(MENU_BORDER "========================================\n" RESET);
+}
+
+void mostrarDetallesEventoTabla(Evento *evento) {
+    printf("\n" MENU_BORDER "========================================\n" RESET);
+    printf(MENU_TITLE "         DETALLES DEL EVENTO\n" RESET);
+    printf(MENU_BORDER "========================================\n" RESET);
+    
+    printf(COLOR_EVENTO BOLD "Nombre:      " RESET "%s\n", evento->nombre);
+    printf(COLOR_EVENTO BOLD "Productora:  " RESET "%s\n", evento->productora);
+    printf(COLOR_EVENTO BOLD "Sitio:       " RESET "%s\n", evento->sitio->nombre);
+    printf(COLOR_EVENTO BOLD "Fecha:       " RESET "%s\n", evento->fecha);
+    
+    printf(MENU_BORDER "----------------------------------------\n" RESET);
+    printf("%-20s %-20s %-20s\n", "Sector", "Precio por asiento", "Disponibles");
+    printf(MENU_BORDER "----------------------------------------\n" RESET);
+    
+    for (int s = 0; s < evento->sitio->totalSectores; s++) {
+        Sector *sector = &evento->sitio->sectores[s];
+        int asientosDisponibles = 0;
+        
+        for (int a = 0; a < sector->cantidadEspacios; a++) {
+            if (evento->disponibilidad[s][a] == 1) {
+                asientosDisponibles++;
+            }
+        }
+        
+        printf("%-20s %-20.2f ", sector->nombre, evento->precios[s].precio);
+        
+        if (asientosDisponibles > 0) {
+            printf(GREEN "%-20d\n" RESET, asientosDisponibles);
+        } else {
+            printf(RED "%-20d (AGOTADOS)\n" RESET, asientosDisponibles);
+        }
+    }
+    
+    printf(MENU_BORDER "========================================\n" RESET);
+}
+
 void menuCliente() {
     char nombre[50];
 
@@ -213,7 +367,7 @@ void menuCliente() {
         switch(opcion) {
             case 1:
                 printf(MENU_BORDER "=================================\n" RESET);
-                printf(MSG_INFO "Aqui consultas eventos...\n" RESET);
+                consultarEventos();
                 break;
 
             case 2:
