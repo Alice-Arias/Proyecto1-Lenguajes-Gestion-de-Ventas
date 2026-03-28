@@ -26,8 +26,6 @@ typedef struct {
 extern Evento *eventos;
 extern int totalEventos;
 
-//Ver si se cambia el manejo de precios 
-
 // Funciones para manejo de eventos
 void inicializarEventos();
 void crearEvento(const char *nombre, const char *productora, const char *fecha, SitioEvento *sitio, float *preciosPorSector);
