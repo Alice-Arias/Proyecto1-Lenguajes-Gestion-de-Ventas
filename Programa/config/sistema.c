@@ -8,17 +8,21 @@
  * Salidas: Crea el archivo si no existe y muestra mensajes informativos.
  * Restricciones: Requiere permisos de lectura/escritura sobre la carpeta data.
  */
-void inicializarSistema() {
+void inicializarSistema()
+{
     FILE *archivo;
 
     archivo = fopen("data/usuarios.txt", "r");
 
-    if (!archivo) {
+    if (!archivo)
+    {
         archivo = fopen("data/usuarios.txt", "w");
-        if (archivo) {
+        if (archivo)
+        {
             printf(MSG_INFO "Archivo usuarios creado.\n" RESET);
         }
     }
 
-    if (archivo) fclose(archivo);
+    if (archivo)
+        fclose(archivo);
 }

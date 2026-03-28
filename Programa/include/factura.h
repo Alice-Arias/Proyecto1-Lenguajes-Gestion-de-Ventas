@@ -9,7 +9,8 @@
 #define MAX_CLIENTE_FACTURA 100
 #define MAX_DETALLE_FACTURA 2048
 
-typedef struct {
+typedef struct
+{
     int id;
     char cedula[MAX_CEDULA_FACTURA];
     char cliente[MAX_CLIENTE_FACTURA];

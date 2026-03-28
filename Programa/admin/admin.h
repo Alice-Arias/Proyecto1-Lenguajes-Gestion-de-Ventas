@@ -4,9 +4,10 @@
 #define MAX_NOMBRE 50
 #define ARCHIVO_USUARIOS "data/usuarios.txt"
 
-typedef struct {
+typedef struct
+{
     char usuario[MAX_NOMBRE];
-    unsigned long hash;// Almacena el hash de la contraseña
+    unsigned long hash; // Almacena el hash de la contraseña
 } Usuario;
 
 int IniciarSesionAdmin();

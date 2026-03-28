@@ -98,7 +98,7 @@ int IniciarSesionAdmin()
 
     char usuarioIngresado[50];
     char contrasenaIngresada[50];
-    
+
     printf("\n" MENU_BORDER "====================================\n" RESET);
     printf(MENU_INPUT "Usuario: " RESET);
     scanf("%49s", usuarioIngresado);

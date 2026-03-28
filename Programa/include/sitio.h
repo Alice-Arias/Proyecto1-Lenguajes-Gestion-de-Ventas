@@ -14,7 +14,8 @@ Descripcion:
 Representa un sitio donde se realizan eventos.
 Contiene información básica y sus sectores asociados.
 */
-typedef struct {
+typedef struct
+{
     char nombre[MAX_NOMBRE];
     char ubicacion[MAX_UBICACION];
     char web[MAX_WEB];

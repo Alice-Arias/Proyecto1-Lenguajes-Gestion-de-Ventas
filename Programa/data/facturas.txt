@@ -270,3 +270,19 @@ Subtotal: 9000.00
 Servicio (5%): 450.00
 TOTAL: 9450.00
 =============================
+
+========== FACTURA ==========
+ID: 18
+Cedula: 703120302
+Nombre: Alice Arias
+Evento: Banda
+Productora: Music X
+Sitio: Estadio Nacional
+Fecha compra: 28/03/2026
+Fecha evento: 20/3/2029
+Detalle asientos: V3(19000.00), V4(19000.00), V5(19000.00)
+
+Subtotal: 57000.00
+Servicio (5%): 2850.00
+TOTAL: 59850.00
+=============================

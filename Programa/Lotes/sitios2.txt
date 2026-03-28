@@ -1,3 +1,3 @@
-La Gran via,Tournon,www.lagran.via
-Galeria Turrialba,Turrialba,www.galeria.cr
-Plaza Real,Heredia,www.plazareal.cr
+Mall Multiplaza Escazú,Escazú,www.multiplazaescazu.cr
+City Mall Alajuela,Alajuela,www.citymallalajuela.cr
+Terrazas Lindora,Santa Ana,www.terrazaslindora.cr

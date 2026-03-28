@@ -5,7 +5,8 @@
 
 #define MAX_SECTOR_NOMBRE 100
 
-typedef struct {
+typedef struct
+{
     char nombre[MAX_SECTOR_NOMBRE];
     char inicial;
     int cantidadEspacios;

@@ -337,21 +337,31 @@ void facturaMostrarListadoAdmin(const char *ruta)
         return;
     }
 
-    printf("\n" MENU_BORDER "================================================================================\n" RESET);
-    printf(MENU_TITLE "                              LISTADO DE FACTURAS\n" RESET);
-    printf(MENU_BORDER "================================================================================\n" RESET);
-    printf("%-5s %-20s %-12s %-20s %-12s\n", "ID", "Evento", "Fecha compra", "Cliente", "Subtotal");
-    printf(MENU_BORDER "--------------------------------------------------------------------------------\n" RESET);
+    printf(CYAN BOLD "================================================================================\n" RESET);
+    printf(CYAN BOLD "                      LISTADO DE FACTURAS                              \n" RESET);
+    printf(CYAN BOLD "================================================================================\n" RESET);
+
+    printf(BLUE BOLD "--------------------------------------------------------------------------------\n" RESET);
+
+    printf(GREEN BOLD "%-5s %-22s %-15s %-22s %-12s\n" RESET,
+        "ID", "Evento", "Fecha", "Cliente", "Subtotal");
+
+    printf(BLUE BOLD "--------------------------------------------------------------------------------\n" RESET);
 
     for (int i = 0; i < cantidad; i++)
     {
-        printf("%-5d %-20.20s %-12s %-20.20s %-12.2f\n",
-               facturas[i].id,
-               facturas[i].evento,
-               facturas[i].fechaCompra,
-               facturas[i].cliente,
-               facturas[i].subtotal);
+        printf(WHITE "%-5d " RESET, facturas[i].id);
+
+        printf(CYAN "%-22.22s " RESET, facturas[i].evento);
+
+        printf(YELLOW "%-15s " RESET, facturas[i].fechaCompra);
+
+        printf(MAGENTA "%-22.22s " RESET, facturas[i].cliente);
+
+        printf(GREEN BOLD "CRC %.2f\n" RESET, facturas[i].subtotal);
     }
+
+    printf(BLUE BOLD "--------------------------------------------------------------------------------\n" RESET);
 
     facturaLiberarLista(facturas);
 }
