@@ -26,9 +26,9 @@ Fecha compra: 05/03/2029
 Fecha evento: 20/03/2029
 Detalle asientos: V1(19000.00)
 
-Subtotal: 19000.00
-Servicio (5%): 950.00
-TOTAL: 19950.00
+Subtotal: 114000.00
+Servicio (5%): 5700.00
+TOTAL: 119700.00
 =============================
 
 ========== FACTURA ==========
@@ -42,9 +42,9 @@ Fecha compra: 20/03/2029
 Fecha evento: 15/04/2029
 Detalle asientos: P1(15000.00)
 
-Subtotal: 15000.00
-Servicio (5%): 750.00
-TOTAL: 15750.00
+Subtotal: 60000.00
+Servicio (5%): 3000.00
+TOTAL: 63000.00
 =============================
 
 ========== FACTURA ==========
@@ -234,9 +234,9 @@ Fecha compra: 01/06/2030
 Fecha evento: 20/06/2030
 Detalle asientos: P1(25000.00)
 
-Subtotal: 25000.00
-Servicio (5%): 1250.00
-TOTAL: 26250.00
+Subtotal: 56000.00
+Servicio (5%): 2800.00
+TOTAL: 58800.00
 =============================
 
 ========== FACTURA ==========
@@ -250,9 +250,9 @@ Fecha compra: 20/06/2030
 Fecha evento: 10/07/2030
 Detalle asientos: P5(28000.00)
 
-Subtotal: 28000.00
-Servicio (5%): 1400.00
-TOTAL: 29400.00
+Subtotal: 108000.00
+Servicio (5%): 5400.00
+TOTAL: 113400.00
 =============================
 
 ========== FACTURA ==========

@@ -4,3 +4,7 @@ Centro de Eventos,Alajuela,www.eventos.cr
 Teatro Luz,Limon,ww.limon
 Arena Deportiva,Cartago,www.arena.cr
 Centro Cultural,Limon,www.cultura.cr
+La Gran via,Tournon,www.lagran.via
+Galeria Turrialba,Turrialba,www.galeria.cr
+Plaza Real,Heredia,www.plazareal.cr
+Plaza de deportes Siquirres,Siquirres,www.plazasiquirresd.org
