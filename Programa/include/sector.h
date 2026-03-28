@@ -15,7 +15,6 @@ typedef struct {
 Sector crearSector(const char *nombre, char inicial, int cantidad);
 void liberarSector(Sector *sector);
 void mostrarSector(Sector *sector);
-
 void guardarSectoresEnArchivo(const char *ruta);
 void cargarSectoresDesdeArchivo(const char *ruta);
 

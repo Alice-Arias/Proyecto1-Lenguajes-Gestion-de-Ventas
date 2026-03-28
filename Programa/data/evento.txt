@@ -5,3 +5,13 @@ Concierto Luz,Producciones Caribe,05/6/2029,Teatro Luz,10000.00,5000.00
 Final Futbol,Deportes SA,25/7/2029,Arena Deportiva,18000.00,9000.00
 Festival Cultural,Cultura Viva,12/8/2029,Centro Cultural,9000.00,4000.00
 Musi,MSL,29/8/2028,Estadio Nacional,1000.00,2999.00
+Rock Fest,ConcertZone,15/11/2029,Estadio Nacional,25000.00,15000.00
+Jazz Night,Sonidos Latinos,05/12/2029,Teatro Nacional,20000.00,12000.00,8000.00
+Tecnología Expo,TechCorp,20/01/2030,Centro de Eventos,18000.00,10000.00,12000.00,9000.00
+Festival de Cine,Cinefilo,10/02/2030,Teatro Luz,12000.00,7000.00,5000.00
+Maratón Deportiva,Deportes SA,25/03/2030,Arena Deportiva,22000.00,14000.00,10000.00
+Arte Contemporáneo,Cultura Viva,15/04/2030,Centro Cultural,15000.00,8000.00,6000.00
+Electro Party,MusicNow,01/05/2030,Estadio Nacional,30000.00,18000.00
+Sinfonía Primavera,Orquesta Nacional,20/06/2030,Teatro Nacional,25000.00,15000.00,10000.00
+Comic Con,FanWorld,10/07/2030,Centro de Eventos,28000.00,16000.00,18000.00,12000.00
+Feria Gastronómica,Sabores CR,25/08/2030,Centro Cultural,9000.00,4000.00,3000.00

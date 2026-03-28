@@ -8,11 +8,7 @@ typedef struct {
 
 // Funciones para manejo de arreglos de asientos
 Asiento* crearAsientos(int cantidad, char inicial);
-
-// Libera la memoria de un arreglo de asientos
 void liberarAsientos(Asiento *asientos, int cantidad);
-
-// Muestra todos los asientos 
 void mostrarAsientos(const Asiento *asientos, int cantidad);
 void guardarAsientosEnArchivo(const char *ruta);
 void cargarAsientosDesdeArchivo(const char *ruta);
