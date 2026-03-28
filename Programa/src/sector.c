@@ -106,7 +106,7 @@ void mostrarSector(Sector *sector) {
     printf(MENU_BORDER "============================\n" RESET);
 
     printf(COLOR_SITIO "Nombre: %s" RESET, sector->nombre);
-    printf(" | Inicial: ");
+    printf(MENU_BORDER " | Inicial: " RESET);
     printf(HIGHLIGHT "%c\n" RESET, sector->inicial);
 
     printf(MSG_INFO "Cantidad: %d\n" RESET, sector->cantidadEspacios);

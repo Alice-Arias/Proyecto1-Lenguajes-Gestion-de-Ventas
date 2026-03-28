@@ -5,6 +5,7 @@
 #include "include/evento.h"
 #include "include/sector.h"
 #include "include/asiento.h"
+#include "include/factura.h"
 #include "include/colors.h"
 
 int main()
@@ -13,10 +14,11 @@ int main()
     inicializarSitios();
     cargarSitiosDesdeArchivo("data/sitios.txt");
     cargarSectoresDesdeArchivo("data/sector.txt");
-
     inicializarEventos();
     cargarEventosDesdeArchivo("data/evento.txt");
     cargarAsientosDesdeArchivo("data/asientos.txt");
+    sincronizarAsientosConFacturas("data/facturas.txt");
+    guardarAsientosEnArchivo("data/asientos.txt");
     int opcion;
 
     do

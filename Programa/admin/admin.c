@@ -8,9 +8,32 @@
 #include "../include/evento.h"
 #include "../include/sector.h"
 #include "../include/asiento.h"
+#include "../include/factura.h"
 
 Usuario *listaUsuarios = NULL;
 int cantidadUsuarios = 0;
+
+static void limpiarBufferEntradaAdmin(void)
+{
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF)
+    {
+    }
+}
+
+static int leerEnteroAdmin(const char *prompt, int *valor)
+{
+    if (prompt != NULL)
+    {
+        printf("%s", prompt);
+    }
+    if (scanf("%d", valor) != 1)
+    {
+        limpiarBufferEntradaAdmin();
+        return 0;
+    }
+    return 1;
+}
 
 void cargarUsuarios()
 {
@@ -70,7 +93,7 @@ int IniciarSesionAdmin()
             }
             else
             {
-                printf(MSG_ERROR "Contrasena incorrecta111\n" RESET);
+                printf(MSG_ERROR "Contrasena incorrecta\n" RESET);
                 return 0;
             }
         }
@@ -96,8 +119,11 @@ void menuEventos()
 
         printf(MENU_BORDER "====================================\n" RESET);
 
-        printf(MENU_INPUT "Seleccione: " RESET);
-        scanf("%d", &opcion);
+        if (!leerEnteroAdmin(MENU_INPUT "Seleccione: " RESET, &opcion))
+        {
+            printf(MSG_ERROR "Entrada invalida\n" RESET);
+            continue;
+        }
 
         switch (opcion)
         {
@@ -139,15 +165,18 @@ void menuSitios()
 
         printf(MENU_BORDER "====================================\n" RESET);
 
-        printf(MENU_INPUT "Seleccione: " RESET);
-        scanf("%d", &opcion);
+        if (!leerEnteroAdmin(MENU_INPUT "Seleccione: " RESET, &opcion))
+        {
+            printf(MSG_ERROR "Entrada invalida\n" RESET);
+            continue;
+        }
 
         switch (opcion)
         {
 
         case 1:
-            printf("Ingrese ruta del archivo: ");
-            scanf("%s", ruta);
+            printf(MENU_INPUT "Ingrese ruta del archivo: " RESET);
+            scanf("%199s", ruta);
             cargarSitiosDesdeArchivo(ruta);
             break;
 
@@ -155,13 +184,13 @@ void menuSitios()
         {
             char nombre[50], ubicacion[150], web[100];
 
-            printf("Nombre: ");
+            printf(MENU_INPUT "Nombre: " RESET);
             scanf(" %[^\n]", nombre);
 
-            printf("Ubicacion: ");
+            printf(MENU_INPUT "Ubicacion: " RESET);
             scanf(" %[^\n]", ubicacion);
 
-            printf("Web (opcional): ");
+            printf(MENU_INPUT "Web (opcional): " RESET);
             scanf(" %[^\n]", web);
 
             if (strlen(nombre) == 0 || strlen(ubicacion) == 0)
@@ -183,11 +212,11 @@ void menuSitios()
             break;
 
         case 5:
-            printf("Volviendo...\n");
+            printf(MSG_INFO "Volviendo...\n" RESET);
             break;
 
         default:
-            printf("Opcion invalida\n");
+            printf(MSG_ERROR "Opcion invalida\n" RESET);
         }
 
     } while (opcion != 5);
@@ -214,16 +243,23 @@ void menuSectores()
 
         printf(MENU_BORDER "====================================\n" RESET);
 
-        printf(MENU_INPUT "Seleccione: " RESET);
-        scanf("%d", &opcion);
+        if (!leerEnteroAdmin(MENU_INPUT "Seleccione: " RESET, &opcion))
+        {
+            printf(MSG_ERROR "Entrada invalida\n" RESET);
+            continue;
+        }
 
         switch (opcion)
         {
 
         case 1:
             mostrarSitios();
-            printf("Seleccione sitio: ");
-            scanf("%d", &indiceSitio);
+            printf(MENU_INPUT "Seleccione sitio: " RESET);
+            if (!leerEnteroAdmin(NULL, &indiceSitio))
+            {
+                printf(MSG_ERROR "Entrada invalida\n" RESET);
+                break;
+            }
 
             if (indiceSitio < 1 || indiceSitio > cantidadSitios)
             {
@@ -236,8 +272,12 @@ void menuSectores()
 
         case 2:
             mostrarSitios();
-            printf("Seleccione sitio: ");
-            scanf("%d", &indiceSitio);
+            printf(MENU_INPUT "Seleccione sitio: " RESET);
+            if (!leerEnteroAdmin(NULL, &indiceSitio))
+            {
+                printf(MSG_ERROR "Entrada invalida\n" RESET);
+                break;
+            }
 
             if (indiceSitio < 1 || indiceSitio > cantidadSitios)
             {
@@ -245,14 +285,18 @@ void menuSectores()
                 break;
             }
 
-            printf("Nombre del sector: ");
+            printf(MENU_INPUT "Nombre del sector: " RESET);
             scanf(" %[^\n]", nombre);
 
-            printf("Inicial (letra): ");
+            printf(MENU_INPUT "Inicial (letra): " RESET);
             scanf(" %c", &inicial);
 
-            printf("Cantidad de asientos: ");
-            scanf("%d", &cantidad);
+            printf(MENU_INPUT "Cantidad de asientos: " RESET);
+            if (!leerEnteroAdmin(NULL, &cantidad))
+            {
+                printf(MSG_ERROR "Entrada invalida\n" RESET);
+                break;
+            }
 
             agregarSectorASitio(
                 &listaSitios[indiceSitio - 1],
@@ -263,8 +307,12 @@ void menuSectores()
 
         case 3:
             mostrarSitios();
-            printf("Seleccione sitio: ");
-            scanf("%d", &indiceSitio);
+            printf(MENU_INPUT "Seleccione sitio: " RESET);
+            if (!leerEnteroAdmin(NULL, &indiceSitio))
+            {
+                printf(MSG_ERROR "Entrada invalida\n" RESET);
+                break;
+            }
 
             if (indiceSitio < 1 || indiceSitio > cantidadSitios)
             {
@@ -276,7 +324,7 @@ void menuSectores()
             break;
 
         case 4:
-            printf("Volviendo...\n");
+            printf(MSG_INFO "Volviendo...\n" RESET);
             break;
 
         default:
@@ -290,12 +338,14 @@ void menuSectores()
 
 static void mostrarTopMeses()
 {
-    // Contar eventos por mes-año
     struct MesCount
     {
         char mesAnio[10];
         int count;
-    } meses[100];
+    };
+
+    // Contar eventos por mes-año
+    struct MesCount *meses = NULL;
     int mesesCount = 0;
 
     for (int i = 0; i < totalEventos; i++)
@@ -316,6 +366,14 @@ static void mostrarTopMeses()
         }
         if (idx == -1)
         {
+            struct MesCount *tmp = realloc(meses, (mesesCount + 1) * sizeof(struct MesCount));
+            if (tmp == NULL)
+            {
+                free(meses);
+                printf(MSG_ERROR "Error de memoria en estadisticas.\n" RESET);
+                return;
+            }
+            meses = tmp;
             strcpy(meses[mesesCount].mesAnio, key);
             meses[mesesCount].count = 1;
             mesesCount++;
@@ -353,69 +411,63 @@ static void mostrarTopMeses()
     {
         printf(MSG_INFO "No hay eventos registrados.\n" RESET);
     }
+
+    free(meses);
 }
 
 static void mostrarTopProductoras()
 {
-    FILE *f = fopen("data/facturas.txt", "r");
-    if (!f)
+    struct ProdTotal
+    {
+        char nombre[MAX_PRODUCTORA];
+        float total;
+    };
+
+    Factura *facturas = NULL;
+    int cantidadFacturas = 0;
+
+    if (!facturaCargarTodas(ARCHIVO_FACTURAS, &facturas, &cantidadFacturas) || cantidadFacturas == 0)
     {
         printf(MSG_WARNING "No hay facturas registradas.\n" RESET);
         return;
     }
 
-    struct ProdTotal
-    {
-        char nombre[MAX_PRODUCTORA];
-        float total;
-    } prod[100];
+    struct ProdTotal *prod = NULL;
     int prodCount = 0;
 
-    char line[256];
-    char currentProd[100] = "";
-    float currentTotal = 0.0;
-    int inFactura = 0;
-
-    while (fgets(line, sizeof(line), f))
+    for (int i = 0; i < cantidadFacturas; i++)
     {
-        line[strcspn(line, "\n")] = '\0';
-        if (strstr(line, "========== FACTURA ==========") != NULL)
+        int idx = -1;
+        for (int j = 0; j < prodCount; j++)
         {
-            currentProd[0] = '\0';
-            currentTotal = 0.0;
-            inFactura = 1;
-        }
-        else if (inFactura && strstr(line, "Productora:") != NULL)
-        {
-            sscanf(line, "Productora: %[^\n]", currentProd);
-        }
-        else if (inFactura && strstr(line, "TOTAL:") != NULL)
-        {
-            sscanf(line, "TOTAL: %f", &currentTotal);
-            if (currentProd[0] != '\0')
+            if (strcmp(prod[j].nombre, facturas[i].productora) == 0)
             {
-                int idx = -1;
-                for (int i = 0; i < prodCount; i++)
-                {
-                    if (strcmp(prod[i].nombre, currentProd) == 0)
-                    {
-                        idx = i;
-                        break;
-                    }
-                }
-                if (idx == -1)
-                {
-                    idx = prodCount;
-                    strcpy(prod[idx].nombre, currentProd);
-                    prod[idx].total = 0.0;
-                    prodCount++;
-                }
-                prod[idx].total += currentTotal;
+                idx = j;
+                break;
             }
-            inFactura = 0;
         }
+
+        if (idx == -1)
+        {
+            struct ProdTotal *tmp = realloc(prod, (prodCount + 1) * sizeof(struct ProdTotal));
+            if (tmp == NULL)
+            {
+                free(prod);
+                facturaLiberarLista(facturas);
+                printf(MSG_ERROR "Error de memoria en estadisticas.\n" RESET);
+                return;
+            }
+            prod = tmp;
+            idx = prodCount;
+            strcpy(prod[idx].nombre, facturas[i].productora);
+            prod[idx].total = 0.0;
+            prodCount++;
+        }
+
+        prod[idx].total += facturas[i].total;
     }
-    fclose(f);
+
+    facturaLiberarLista(facturas);
 
     // Ordenar descendente por total
     for (int i = 0; i < prodCount - 1; i++)
@@ -443,17 +495,21 @@ static void mostrarTopProductoras()
     {
         printf(MSG_INFO "No hay facturas registradas.\n" RESET);
     }
+
+    free(prod);
 }
 
 static void mostrarSitiosConEventosYRecaudacion()
 {
-    // 1. Contar eventos por sitio
     struct SitioData
     {
         char nombre[MAX_NOMBRE];
         int eventos;
         float recaudacion;
-    } sitios[100];
+    };
+
+    // 1. Contar eventos por sitio
+    struct SitioData *sitios = NULL;
     int sitiosCount = 0;
 
     for (int i = 0; i < totalEventos; i++)
@@ -470,6 +526,14 @@ static void mostrarSitiosConEventosYRecaudacion()
         }
         if (idx == -1)
         {
+            struct SitioData *tmp = realloc(sitios, (sitiosCount + 1) * sizeof(struct SitioData));
+            if (tmp == NULL)
+            {
+                free(sitios);
+                printf(MSG_ERROR "Error de memoria en estadisticas.\n" RESET);
+                return;
+            }
+            sitios = tmp;
             idx = sitiosCount;
             strcpy(sitios[idx].nombre, sitioNombre);
             sitios[idx].eventos = 0;
@@ -480,44 +544,22 @@ static void mostrarSitiosConEventosYRecaudacion()
     }
 
     // 2. Leer facturas para sumar recaudación por sitio
-    FILE *f = fopen("data/facturas.txt", "r");
-    if (f)
+    Factura *facturas = NULL;
+    int cantidadFacturas = 0;
+    if (facturaCargarTodas(ARCHIVO_FACTURAS, &facturas, &cantidadFacturas))
     {
-        char line[256];
-        char currentSitio[100] = "";
-        float currentTotal = 0.0;
-        int inFactura = 0;
-        while (fgets(line, sizeof(line), f))
+        for (int f = 0; f < cantidadFacturas; f++)
         {
-            line[strcspn(line, "\n")] = '\0';
-            if (strstr(line, "========== FACTURA ==========") != NULL)
+            for (int i = 0; i < sitiosCount; i++)
             {
-                currentSitio[0] = '\0';
-                currentTotal = 0.0;
-                inFactura = 1;
-            }
-            else if (inFactura && strstr(line, "Sitio:") != NULL)
-            {
-                sscanf(line, "Sitio: %[^\n]", currentSitio);
-            }
-            else if (inFactura && strstr(line, "TOTAL:") != NULL)
-            {
-                sscanf(line, "TOTAL: %f", &currentTotal);
-                if (currentSitio[0] != '\0')
+                if (strcmp(sitios[i].nombre, facturas[f].sitio) == 0)
                 {
-                    for (int i = 0; i < sitiosCount; i++)
-                    {
-                        if (strcmp(sitios[i].nombre, currentSitio) == 0)
-                        {
-                            sitios[i].recaudacion += currentTotal;
-                            break;
-                        }
-                    }
+                    sitios[i].recaudacion += facturas[f].total;
+                    break;
                 }
-                inFactura = 0;
             }
         }
-        fclose(f);
+        facturaLiberarLista(facturas);
     }
 
     // 3. Ordenar por recaudación descendente
@@ -548,6 +590,8 @@ static void mostrarSitiosConEventosYRecaudacion()
     {
         printf(MSG_INFO "No hay eventos registrados.\n" RESET);
     }
+
+    free(sitios);
 }
 
 // Función que agrupa las tres estadísticas
@@ -578,8 +622,11 @@ void menuAdmin()
 
         printf(MENU_BORDER "=========================================\n" RESET);
 
-        printf(MENU_INPUT "Seleccione: " RESET);
-        scanf("%d", &opcion);
+        if (!leerEnteroAdmin(MENU_INPUT "Seleccione: " RESET, &opcion))
+        {
+            printf(MSG_ERROR "Entrada invalida\n" RESET);
+            continue;
+        }
 
         switch (opcion)
         {
@@ -600,18 +647,18 @@ void menuAdmin()
             break;
 
         case 5:
-            printf("Aqui va lista de facturas...\n");
+            facturaMostrarListadoAdmin(ARCHIVO_FACTURAS);
             break;
 
         case 6:
             mostrarEstadisticas();
             break;
         case 7:
-            printf("Volviendo...\n");
+            printf(MSG_INFO "Volviendo...\n" RESET);
             break;
 
         default:
-            printf("Opcion invalida\n");
+            printf(MSG_ERROR "Opcion invalida\n" RESET);
         }
 
     } while (opcion != 7);

@@ -2,9 +2,70 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "../include/colors.h"
 #include "../include/evento.h"
 #include "../include/sitio.h"
+#include "../include/factura.h"
+
+static void limpiarEspaciosInicio(char **texto) {
+    while (**texto == ' ' || **texto == '\t') {
+        (*texto)++;
+    }
+}
+
+static Evento *buscarEventoPorNombre(const char *nombreEvento) {
+    for (int i = 0; i < totalEventos; i++) {
+        if (strcmp(eventos[i].nombre, nombreEvento) == 0) {
+            return &eventos[i];
+        }
+    }
+    return NULL;
+}
+
+static int buscarSectorPorInicial(const Evento *evento, char inicial) {
+    char inicialMayus = (char)toupper((unsigned char)inicial);
+    for (int s = 0; s < evento->sitio->totalSectores; s++) {
+        char inicialSector = (char)toupper((unsigned char)evento->sitio->sectores[s].inicial);
+        char inicialNombre = (char)toupper((unsigned char)evento->sitio->sectores[s].nombre[0]);
+        if (inicialSector == inicialMayus || inicialNombre == inicialMayus) {
+            return s;
+        }
+    }
+    return -1;
+}
+
+static void aplicarDetalleFacturaAEvento(Evento *evento, const char *detalleAsientos) {
+    if (evento == NULL || detalleAsientos == NULL || detalleAsientos[0] == '\0' || strcmp(detalleAsientos, "N/A") == 0) {
+        return;
+    }
+
+    char detalleCopia[MAX_DETALLE_FACTURA];
+    strncpy(detalleCopia, detalleAsientos, sizeof(detalleCopia) - 1);
+    detalleCopia[sizeof(detalleCopia) - 1] = '\0';
+
+    char *token = strtok(detalleCopia, ",");
+    while (token != NULL) {
+        limpiarEspaciosInicio(&token);
+
+        if (token[0] != '\0') {
+            char inicial = token[0];
+            char *ptrNumero = token + 1;
+            int numeroAsiento = (int)strtol(ptrNumero, NULL, 10);
+
+            int sectorIdx = buscarSectorPorInicial(evento, inicial);
+            if (sectorIdx >= 0 && numeroAsiento > 0) {
+                int asientoIdx = numeroAsiento - 1;
+                int totalAsientos = evento->sitio->sectores[sectorIdx].cantidadEspacios;
+                if (asientoIdx < totalAsientos) {
+                    evento->disponibilidad[sectorIdx][asientoIdx] = 0;
+                }
+            }
+        }
+
+        token = strtok(NULL, ",");
+    }
+}
 
 Asiento* crearAsientos(int cantidad, char inicial) {
         if (cantidad <= 0) {
@@ -84,7 +145,7 @@ void mostrarAsientos(const Asiento *asientos, int cantidad) {
 void guardarAsientosEnArchivo(const char *ruta) {
     FILE *f = fopen(ruta, "w");
     if (!f) {
-        printf("Error al abrir %s para guardar asientos.\n", ruta);
+        printf(MSG_ERROR "Error al abrir %s para guardar asientos.\n" RESET, ruta);
         return;
     }
 
@@ -101,7 +162,7 @@ void guardarAsientosEnArchivo(const char *ruta) {
     }
 
     fclose(f);
-    printf("Asientos guardados en %s.\n", ruta);
+    printf(MSG_SUCCESS "Asientos guardados en %s.\n" RESET, ruta);
 }
 
     
@@ -146,5 +207,24 @@ void cargarAsientosDesdeArchivo(const char *ruta) {
     }
 
     fclose(f);
-    printf("Asientos cargados desde %s.\n", ruta);
+    printf(MSG_SUCCESS "Asientos cargados desde %s.\n" RESET, ruta);
+}
+
+void sincronizarAsientosConFacturas(const char *rutaFacturas) {
+    Factura *facturas = NULL;
+    int cantidad = 0;
+
+    if (!facturaCargarTodas(rutaFacturas, &facturas, &cantidad)) {
+        return;
+    }
+
+    for (int i = 0; i < cantidad; i++) {
+        Evento *evento = buscarEventoPorNombre(facturas[i].evento);
+        if (evento == NULL) {
+            continue;
+        }
+        aplicarDetalleFacturaAEvento(evento, facturas[i].detalleAsientos);
+    }
+
+    facturaLiberarLista(facturas);
 }

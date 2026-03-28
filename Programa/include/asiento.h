@@ -12,4 +12,5 @@ void liberarAsientos(Asiento *asientos, int cantidad);
 void mostrarAsientos(const Asiento *asientos, int cantidad);
 void guardarAsientosEnArchivo(const char *ruta);
 void cargarAsientosDesdeArchivo(const char *ruta);
+void sincronizarAsientosConFacturas(const char *rutaFacturas);
 #endif

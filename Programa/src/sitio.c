@@ -65,7 +65,7 @@ void agregarSitio(const char *nombre, const char *ubicacion, const char *web) {
 
     cantidadSitios++;
 
-    printf("Sitio '%s' agregado correctamente.\n", nombre);
+    printf(MSG_SUCCESS "Sitio '%s' agregado correctamente.\n" RESET, nombre);
 }
 
 
@@ -124,9 +124,9 @@ void mostrarSitios() {
 
     for (int i = 0; i < cantidadSitios; i++) {
         printf(COLOR_SITIO "%d. %s" RESET, i + 1, listaSitios[i].nombre);
-        printf(" | ");
+        printf(MENU_BORDER " | " RESET);
         printf(MSG_INFO "%s" RESET, listaSitios[i].ubicacion);
-        printf(" | ");
+        printf(MENU_BORDER " | " RESET);
         printf(COLOR_EVENTO "%s\n" RESET, listaSitios[i].web);
     }
 
