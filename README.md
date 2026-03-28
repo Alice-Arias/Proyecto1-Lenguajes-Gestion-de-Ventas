@@ -70,3 +70,10 @@ El programa funciona completamente en consola y mantiene la información mediant
 cd "Programa"
 gcc main.c admin/admin.c cliente/cliente.c config/sistema.c security/hash.c src/*.c -Iinclude -o sistema
 .\sistema.exe
+```
+
+## Factura en PDF (punto extra)
+
+- Al confirmar una compra, el sistema genera la factura en texto y tambien un PDF.
+- Los archivos PDF se guardan en `Programa/data/pdfs` con formato `factura_000001.pdf`.
+- La exportacion PDF esta implementada en C puro (sin librerias externas).

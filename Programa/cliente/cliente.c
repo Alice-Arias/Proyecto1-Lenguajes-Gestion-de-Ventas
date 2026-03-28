@@ -9,6 +9,7 @@
 #include "../include/sitio.h"
 #include "../include/sector.h"
 #include "../include/factura.h"
+#include "../include/pdf_factura.h"
 
 /*
  * Objetivo: Indicar si un anio es bisiesto bajo reglas del calendario gregoriano.
@@ -272,8 +273,24 @@ void comprarBoletos()
     Factura factura;
     if (facturaCrearDesdeCompra(&factura, evento, cedula, nombre, subtotal, servicio, total, detalleAsientos, 0))
     {
-        facturaGuardar(ARCHIVO_FACTURAS, &factura);
-        facturaMostrarDetalle(&factura);
+        if (facturaGuardar(ARCHIVO_FACTURAS, &factura))
+        {
+            char rutaPDF[256];
+
+            facturaMostrarDetalle(&factura);
+            if (facturaGenerarPDF(&factura, FACTURA_PDF_DIR, rutaPDF, sizeof(rutaPDF)))
+            {
+                printf(MSG_SUCCESS "Factura PDF generada en: %s\n" RESET, rutaPDF);
+            }
+            else
+            {
+                printf(MSG_WARNING "No se pudo generar la factura en PDF.\n" RESET);
+            }
+        }
+        else
+        {
+            printf(MSG_ERROR "No se pudo guardar la factura en archivo.\n" RESET);
+        }
     }
 
     free(asientosSeleccionados);

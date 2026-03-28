@@ -286,3 +286,35 @@ Subtotal: 57000.00
 Servicio (5%): 2850.00
 TOTAL: 59850.00
 =============================
+
+========== FACTURA ==========
+ID: 19
+Cedula: 123456789
+Nombre: pdf prueba
+Evento: Electro Party
+Productora: MusicNow
+Sitio: Estadio Nacional
+Fecha compra: 28/03/2026
+Fecha evento: 01/05/2030
+Detalle asientos: V2(30000.00), V3(30000.00), V4(30000.00)
+
+Subtotal: 90000.00
+Servicio (5%): 4500.00
+TOTAL: 94500.00
+=============================
+
+========== FACTURA ==========
+ID: 20
+Cedula: 123456789
+Nombre: prueba f
+Evento: Arte Contemporaneo
+Productora: Cultura Viva
+Sitio: Centro Cultural
+Fecha compra: 28/03/2026
+Fecha evento: 15/04/2030
+Detalle asientos: G1(8000.00), G2(8000.00), G3(8000.00)
+
+Subtotal: 24000.00
+Servicio (5%): 1200.00
+TOTAL: 25200.00
+=============================

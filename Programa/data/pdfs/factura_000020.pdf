@@ -1,0 +1,66 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Count 1 /Kids [3 0 R] >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+5 0 obj
+<< /Length 539 >>
+stream
+BT
+/F1 18 Tf
+50 800 Td
+(FACTURA) Tj
+ET
+BT
+/F1 11 Tf
+50 772 Td
+(ID: 20) Tj
+0 -14 Td
+(Cedula: 123456789) Tj
+0 -14 Td
+(Nombre: prueba f) Tj
+0 -14 Td
+(Evento: Arte Contemporaneo) Tj
+0 -14 Td
+(Productora: Cultura Viva) Tj
+0 -14 Td
+(Sitio: Centro Cultural) Tj
+0 -14 Td
+(Fecha compra: 28/03/2026) Tj
+0 -14 Td
+(Fecha evento: 15/04/2030) Tj
+0 -14 Td
+(Detalle de asientos:) Tj
+0 -14 Td
+(G1\(8000.00\), G2\(8000.00\), G3\(8000.00\)) Tj
+0 -14 Td
+(Subtotal: 24000.00) Tj
+0 -14 Td
+(Servicio \(5%\): 1200.00) Tj
+0 -14 Td
+(TOTAL: 25200.00) Tj
+0 -14 Td
+ET
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000000311 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+900
+%%EOF
