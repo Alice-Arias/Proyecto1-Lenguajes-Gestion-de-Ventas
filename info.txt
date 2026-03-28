@@ -1,0 +1,25 @@
+a. Nombre del curso:
+Lenguajes de Programación
+
+b. Número de semestre y año lectivo:
+I Semestre, 2026
+
+c. Nombre de los estudiantes:
+
+Alice Arias Salazar
+Luis Trejos Rivera
+
+d. Número de carnet de los estudiantes:
+
+2023104639
+2022437816
+
+e. Número de proyecto programado:
+
+Proyecto #1
+
+f. Fecha de entrega:
+28/03/2026
+
+g. Estatus de la entrega:
+Excelente

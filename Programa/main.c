@@ -34,7 +34,12 @@ int main()
         printf(MENU_BORDER "======================================\n" RESET);
 
         printf(MENU_INPUT "Seleccione: " RESET);
-        scanf("%d", &opcion);
+        if (scanf("%d", &opcion) != 1)
+        {
+            int c;
+            while ((c = getchar()) != '\n' && c != EOF) {}
+            opcion = 0;
+        }
 
         switch (opcion)
         {
